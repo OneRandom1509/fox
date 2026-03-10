@@ -1,12 +1,8 @@
 #include <cstdlib>
 #include <sysexits.h>
-#include <fstream>
-#include <ios>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include "Executor.hpp"
-#include "Constants.hpp"
 
 int main(int argc, char *argv[])
 {

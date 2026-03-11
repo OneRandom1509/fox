@@ -24,6 +24,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(FOX_SOURCES
     src/main.cpp
     src/Executor.cpp
+    src/Token.cpp
 )
 
 # ------------------------------------------------

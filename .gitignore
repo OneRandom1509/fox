@@ -61,10 +61,6 @@ CMakeUserPresets.json
 *.exe
 *.out
 
-# Generated binaries
-seeDN-edge
-seeDN-origin
-
 # ============================================================
 # Logs
 # ============================================================

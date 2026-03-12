@@ -1,18 +1,20 @@
 #include "Token.hpp"
+#include <string>
+#include <variant>
 
-Token::Token(TokenType type, std::string lexeme,
-             /*std::string literal, */ int line)
-    : type(std::move(type)), lexeme(std::move(lexeme)), line(std::move(line))
+Token::Token(TokenType type, std::string lexeme, Literal literal, int line)
+    : type(std::move(type)), lexeme(std::move(lexeme)),
+      literal(std::move(literal)), line(std::move(line))
 {}
 
 std::string Token::toString()
 {
-  return tokenTypeString() + " " + this->lexeme /* + " " + this->literal*/;
+  return tokenTypeString() + " " + this->lexeme + " " + literalToString();
 }
 
 std::string Token::tokenTypeString()
 {
-  switch(this->type)
+  switch(type)
     {
     case TokenType::LEFT_PAREN: return "LEFT_PAREN";
     case TokenType::RIGHT_PAREN: return "RIGHT_PAREN";
@@ -24,7 +26,7 @@ std::string Token::tokenTypeString()
     case TokenType::PLUS: return "PLUS";
     case TokenType::SEMICOLON: return "SEMICOLON";
     case TokenType::SLASH: return "SLASH";
-    case TokenType::START: return "START";
+    case TokenType::STAR: return "STAR";
 
     case TokenType::BANG: return "BANG";
     case TokenType::BANG_EQUAL: return "BANG_EQUAL";
@@ -42,7 +44,7 @@ std::string Token::tokenTypeString()
     case TokenType::AND: return "AND";
     case TokenType::CLASS: return "CLASS";
     case TokenType::ELSE: return "ELSE";
-    case TokenType::FLASE: return "FLASE";
+    case TokenType::FALSE: return "FLASE";
     case TokenType::FUN: return "FUN";
     case TokenType::FOR: return "FOR";
     case TokenType::IF: return "IF";
@@ -60,4 +62,14 @@ std::string Token::tokenTypeString()
     }
 
   return "UNKNOWN_TOKEN";
+}
+
+std::string Token::literalToString() const
+{
+  if(std::holds_alternative<std::monostate>(literal))
+    return "null";
+  else if(std::holds_alternative<double>(literal))
+    return std::to_string(std::get<double>(literal));
+  else
+    return std::get<std::string>(literal);
 }

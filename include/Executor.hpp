@@ -4,15 +4,17 @@
 class Executor
 {
 public:
+  static std::string source;
+
   void runFile(std::string path);
 
   void runPrompt();
 
+  static void error(int line, std::string message);
+
 private:
-  std::string source;
-  bool hadError;
+  static bool hadError;
 
   void run();
-  inline void error(int line, std::string message);
-  inline void report(int line, std::string where, std::string message);
+  static inline void report(int line, std::string where, std::string message);
 };

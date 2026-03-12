@@ -6,6 +6,10 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include "Scanner.hpp"
+
+std::string Executor::source = "";
+bool Executor::hadError = false;
 
 void Executor::runFile(std::string path)
 {
@@ -16,9 +20,9 @@ void Executor::runFile(std::string path)
     ss << input_file.rdbuf();
   }
 
-  this->source = ss.str();
+  source = ss.str();
   run();
-  if(this->hadError)
+  if(hadError)
     exit(EX_DATAERR);
 }
 
@@ -36,10 +40,10 @@ void Executor::runPrompt()
         }
       else
         {
-          this->source = std::move(buf);
+          source = std::move(buf);
           run();
           // removing the hadError flag to not kill the interactive session
-          this->hadError = false;
+          hadError = false;
         }
     }
   std::cout << FOX_PROMPT_EXIT << std::endl;
@@ -48,12 +52,14 @@ void Executor::runPrompt()
 
 void Executor::run()
 {
-  // Tokenizer tokenizer(source);
-  // std::vector<Tokens> tokens = tokenizer.scanTokens();
-  //
-  // for(auto token: tokens) {
-  //    std::cout << token << ", ";
-  // }
+  Scanner scanner(*this);
+  std::vector<Token> tokens = scanner.scanTokens();
+
+  for(auto token : tokens)
+    {
+      std::cout << token.toString() << std::endl;
+    }
+  std::cout << std::endl;
 }
 
 void Executor::error(int line, std::string message)
@@ -65,5 +71,5 @@ void Executor::report(int line, std::string where, std::string message)
 {
   std::cerr << "[line " << line << "] Error" << where << ": " << message
             << std::endl;
-  this->hadError = true;
+  hadError = true;
 }

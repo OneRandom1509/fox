@@ -71,6 +71,26 @@ void Scanner::scanToken()
           while(peek() != '\n' && !isAtEnd())
             advance();
         }
+      else if(match('*'))
+        {
+          advance();
+          while(!(peek() == '*' && peekNext() == '/') && !isAtEnd())
+            {
+              if(peek() == '\n')
+                line++;
+              advance();
+            }
+
+          if(isAtEnd())
+            {
+              executor.error(line, "Unterminated block comment.");
+              break;
+            }
+
+          // Consuming the closing '*' and '/'
+          advance();
+          advance();
+        }
       else
         {
           addToken(TokenType::SLASH);

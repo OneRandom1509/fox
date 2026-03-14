@@ -46,3 +46,20 @@ build:
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+# ============================================================
+# AST Generator
+# ============================================================
+
+AST_GEN := tools/generate_ast
+AST_OUTPUT := include/Expr.hpp
+
+$(AST_GEN): tools/generate_ast.cpp
+	@echo -e "$(COLOR_BLUE)▶ Building AST generator...$(COLOR_RESET)"
+	@g++ -std=c++20 tools/generate_ast.cpp -o $(AST_GEN)
+
+ast: $(AST_GEN)
+	@echo -e "$(COLOR_BLUE)▶ Generating AST headers...$(COLOR_RESET)"
+	@./$(AST_GEN) include
+	@$(CLANG_FORMAT) -i $(AST_OUTPUT)
+	@echo -e "$(COLOR_GREEN)✔ AST generated and formatted$(COLOR_RESET)"

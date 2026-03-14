@@ -1,61 +1,53 @@
 #include "Expr.hpp"
 #include "Token.hpp"
-#include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <variant>
 #include <vector>
+#include "AstPrinter.hpp"
 
-class AstPrinter : public Visitor
+std::string AstPrinter::print(const Expr &expr)
 {
-public:
-  std::string print(const Expr &expr)
-  {
-    expr.accept(*this);
-    return result;
-  }
+  expr.accept(*this);
+  return result;
+}
 
-  void visitBinaryExpr(const Binary &expr) override
-  {
-    result = paranthesize(expr.operator_.lexeme,
-                          {expr.left.get(), expr.right.get()});
-  }
+void AstPrinter::visitBinaryExpr(const Binary &expr)
+{
+  result
+    = parenthesize(expr.operator_.lexeme, {expr.left.get(), expr.right.get()});
+}
 
-  void visitGroupingExpr(const Grouping &expr) override
-  {
-    result = paranthesize("group", {expr.expression.get()});
-  }
+void AstPrinter::visitGroupingExpr(const Grouping &expr)
+{
+  result = parenthesize("group", {expr.expression.get()});
+}
 
-  void visitLiteralExpr(const Literal &expr) override
-  {
-    result = literalToString(expr.value);
-  }
+void AstPrinter::visitLiteralExpr(const Literal &expr)
+{
+  result = literalToString(expr.value);
+}
 
-  void visitUnaryExpr(const Unary &expr) override
-  {
-    result = paranthesize(expr.operator_.lexeme, {expr.right.get()});
-  }
+void AstPrinter::visitUnaryExpr(const Unary &expr)
+{
+  result = parenthesize(expr.operator_.lexeme, {expr.right.get()});
+}
 
-private:
-  std::string result;
+std::string AstPrinter::parenthesize(const std::string &name,
+                                     std::vector<const Expr *> exprs)
+{
+  std::stringstream builder;
 
-  std::string
-  paranthesize(const std::string &name, std::vector<const Expr *> exprs)
-  {
-    std::stringstream builder;
+  builder << "(" << name;
 
-    builder << "(" << name;
+  for(const Expr *expr : exprs)
+    {
+      builder << " ";
+      AstPrinter printer;
+      builder << printer.print(*expr);
+    }
 
-    for(const Expr *expr : exprs)
-      {
-        builder << " ";
-        AstPrinter printer;
-        builder << printer.print(*expr);
-      }
+  builder << ")";
 
-    builder << ")";
-
-    return builder.str();
-  }
-};
+  return builder.str();
+}

@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Token.hpp"
 #include "Expr.hpp"
-#include "AstPrinter.cpp"
+#include "AstPrinter.hpp"
 
 #include <string>
 #include "Executor.hpp"
@@ -41,6 +41,6 @@ int main(int argc, char *argv[])
   //
   // AstPrinter printer;
   // std::cout << printer.print(*expression) << std::endl;
-  //
+
   return EX_OK;
 }

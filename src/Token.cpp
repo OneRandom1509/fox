@@ -68,7 +68,7 @@ std::string Token::tokenTypeString()
 std::string literalToString(literal_t literal)
 {
   if(std::holds_alternative<std::monostate>(literal))
-    return "null";
+    return "nil";
   else if(std::holds_alternative<double>(literal))
     return std::to_string(std::get<double>(literal));
   else

@@ -70,6 +70,7 @@ public:
 
 private:
   std::string tokenTypeString();
-
-  std::string literalToString() const;
 };
+
+// This doesn't look good, need to prolly have a common utils
+std::string literalToString(literal_t literal);

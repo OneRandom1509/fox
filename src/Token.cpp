@@ -9,7 +9,8 @@ Token::Token(TokenType type, std::string lexeme, literal_t literal, int line)
 
 std::string Token::toString()
 {
-  return tokenTypeString() + " " + this->lexeme + " " + literalToString();
+  return tokenTypeString() + " " + this->lexeme + " "
+         + literalToString(literal);
 }
 
 std::string Token::tokenTypeString()
@@ -64,7 +65,7 @@ std::string Token::tokenTypeString()
   return "UNKNOWN_TOKEN";
 }
 
-std::string Token::literalToString() const
+std::string literalToString(literal_t literal)
 {
   if(std::holds_alternative<std::monostate>(literal))
     return "null";

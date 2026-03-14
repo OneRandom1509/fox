@@ -5,53 +5,89 @@
 #include <sysexits.h>
 #include <vector>
 
-void defineType(std::ofstream &writer, const std::string &baseName,
-                const std::string &className, const std::string &fieldList)
+struct TypeDef
 {
-  writer << "class " << className << " : public " << baseName << " {\n";
-  writer << "public:\n";
+  std::string name;
+  std::string fields;
+};
 
-  // Constructor signature
-  writer << "  " << className << "(" << fieldList << ")";
+std::vector<std::string> split(const std::string &str, char delim)
+{
+  std::vector<std::string> result;
+  std::stringstream ss(str);
+  std::string item;
 
-  std::vector<std::string> fields;
-  std::stringstream ss(fieldList);
-  std::string field;
-
-  while(std::getline(ss, field, ','))
+  while(std::getline(ss, item, delim))
     {
-      fields.push_back(field);
+      if(!item.empty() && item.front() == ' ')
+        item.erase(0, 1);
+      result.push_back(item);
     }
 
-  // Initializer list
+  return result;
+}
+
+void defineVisitor(std::ofstream &writer, const std::string &baseName,
+                   const std::vector<TypeDef> &types)
+{
+  writer << "class Visitor {\n";
+  writer << "public:\n";
+
+  for(const auto &type : types)
+    {
+      writer << "  virtual void visit" << type.name << baseName << "(const "
+             << type.name << "& expr) = 0;\n";
+    }
+
+  writer << "  virtual ~Visitor() = default;\n";
+  writer << "};\n\n";
+}
+
+void defineType(std::ofstream &writer, const std::string &baseName,
+                const TypeDef &type)
+{
+  auto fields = split(type.fields, ',');
+
+  writer << "class " << type.name << " : public " << baseName << " {\n";
+  writer << "public:\n";
+
+  // Constructor
+  writer << "  " << type.name << "(" << type.fields << ")";
+
   writer << " : ";
 
   bool first = true;
-  for(auto &f : fields)
+  for(auto &field : fields)
     {
-      std::stringstream fs(f);
-      std::string type, name;
-      fs >> type >> name;
+      std::stringstream fs(field);
+      std::string typeName, varName;
+      fs >> typeName >> varName;
 
       if(!first)
         writer << ", ";
-      writer << name << "(std::move(" << name << "))";
+
+      writer << varName << "(std::move(" << varName << "))";
       first = false;
     }
 
   writer << " {}\n\n";
 
+  // Visitor accept
+  writer << "  void accept(Visitor& visitor) const override {\n";
+  writer << "    visitor.visit" << type.name << baseName << "(*this);\n";
+  writer << "  }\n\n";
+
   // Fields
-  for(auto &f : fields)
+  for(auto &field : fields)
     {
-      writer << "  const " << f << ";\n";
+      writer << "  const " << field << ";\n";
     }
 
   writer << "};\n\n";
 }
 
 void defineAst(const std::string &outputDir, const std::string &baseName,
-               const std::vector<std::string> &types)
+               const std::vector<TypeDef> &types)
 {
   std::string path = outputDir + "/" + baseName + ".hpp";
   std::ofstream writer(path);
@@ -61,24 +97,26 @@ void defineAst(const std::string &outputDir, const std::string &baseName,
   writer << "#include <utility>\n";
   writer << "#include \"Token.hpp\"\n\n";
 
+  // Forward declarations
+  for(const auto &type : types)
+    {
+      writer << "class " << type.name << ";\n";
+    }
+
+  writer << "\n";
+
+  defineVisitor(writer, baseName, types);
+
+  writer << "// Abstract class for expressions\n";
   writer << "class " << baseName << " {\n";
   writer << "public:\n";
   writer << "  virtual ~" << baseName << "() = default;\n";
+  writer << "  virtual void accept(Visitor& visitor) const = 0;\n";
   writer << "};\n\n";
 
   for(const auto &type : types)
     {
-      auto pos = type.find(':');
-      std::string className = type.substr(0, pos);
-      std::string fields = type.substr(pos + 1);
-
-      // trim spaces
-      while(!className.empty() && className.back() == ' ')
-        className.pop_back();
-      while(!fields.empty() && fields.front() == ' ')
-        fields.erase(fields.begin());
-
-      defineType(writer, baseName, className, fields);
+      defineType(writer, baseName, type);
     }
 }
 
@@ -92,12 +130,14 @@ int main(int argc, char *argv[])
 
   std::string outputDir = argv[1];
 
-  defineAst(outputDir, "Expr",
-            {"Binary : std::shared_ptr<Expr> left, Token operator_, "
-             "std::shared_ptr<Expr> right",
-             "Grouping : std::shared_ptr<Expr> expression",
-             "Literal : literal_t value",
-             "Unary : Token operator_, std::shared_ptr<Expr> right"});
+  std::vector<TypeDef> exprTypes
+    = {{"Binary", "std::shared_ptr<Expr> left, Token operator_, "
+                  "std::shared_ptr<Expr> right"},
+       {"Grouping", "std::shared_ptr<Expr> expression"},
+       {"Literal", "literal_t value"},
+       {"Unary", "Token operator_, std::shared_ptr<Expr> right"}};
+
+  defineAst(outputDir, "Expr", exprTypes);
 
   return 0;
 }

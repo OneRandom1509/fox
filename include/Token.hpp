@@ -3,7 +3,7 @@
 #include <string>
 #include <variant>
 
-using Literal = std::variant<std::monostate, double, std::string>;
+using literal_t = std::variant<std::monostate, double, std::string>;
 
 enum class TokenType
 {
@@ -61,10 +61,10 @@ class Token
 public:
   const TokenType type;
   const std::string lexeme;
-  const Literal literal;
+  const literal_t literal;
   const int line;
 
-  Token(TokenType type, std::string lexeme, Literal literal, int line);
+  Token(TokenType type, std::string lexeme, literal_t literal, int line);
 
   std::string toString();
 

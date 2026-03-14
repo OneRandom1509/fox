@@ -128,7 +128,7 @@ char Scanner::advance() { return source.at(current++); }
 
 void Scanner::addToken(TokenType type) { addToken(type, std::monostate{}); }
 
-void Scanner::addToken(TokenType type, Literal literal)
+void Scanner::addToken(TokenType type, literal_t literal)
 {
   std::string text = source.substr(start, current - start);
   tokens.emplace_back(type, text, literal, line);

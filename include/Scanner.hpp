@@ -24,7 +24,7 @@ private:
   void scanToken();
 
   inline void addToken(TokenType type);
-  inline void addToken(TokenType type, Literal literal);
+  inline void addToken(TokenType type, literal_t literal);
 
   // simple one character look-ahead
   inline bool match(char expected);

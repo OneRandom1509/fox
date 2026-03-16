@@ -171,7 +171,7 @@ void Scanner::string()
   advance(); // The closing "
 
   // Trim the surrounding quotes
-  std::string value = source.substr(start + 1, current - start - 1);
+  std::string value = source.substr(start + 1, current - start - 2);
   addToken(TokenType::STRING, value);
 }
 

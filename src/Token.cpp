@@ -28,6 +28,8 @@ auto Token::tokenTypeString() -> std::string
     case TokenType::SEMICOLON: return "SEMICOLON";
     case TokenType::SLASH: return "SLASH";
     case TokenType::STAR: return "STAR";
+    case TokenType::QUESTION: return "QUESTION";
+    case TokenType::COLON: return "COLON";
 
     case TokenType::BANG: return "BANG";
     case TokenType::BANG_EQUAL: return "BANG_EQUAL";

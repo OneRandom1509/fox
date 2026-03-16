@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Executor.hpp"
 #include "Token.hpp"
 #include <unordered_map>

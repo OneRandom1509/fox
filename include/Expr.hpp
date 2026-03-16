@@ -9,6 +9,7 @@ class Grouping;
 class Literal;
 class Unary;
 class Comma;
+class Ternary;
 
 class Visitor
 {
@@ -18,6 +19,7 @@ public:
   virtual void visitLiteralExpr(const Literal &expr) = 0;
   virtual void visitUnaryExpr(const Unary &expr) = 0;
   virtual void visitCommaExpr(const Comma &expr) = 0;
+  virtual void visitTernaryExpr(const Ternary &expr) = 0;
   virtual ~Visitor() = default;
 };
 
@@ -104,6 +106,25 @@ public:
     visitor.visitCommaExpr(*this);
   }
 
+  const std::unique_ptr<Expr> left;
+  const std::unique_ptr<Expr> right;
+};
+
+class Ternary : public Expr
+{
+public:
+  Ternary(std::unique_ptr<Expr> condition, std::unique_ptr<Expr> left,
+          std::unique_ptr<Expr> right)
+      : condition(std::move(condition)), left(std::move(left)),
+        right(std::move(right))
+  {}
+
+  void accept(Visitor &visitor) const override
+  {
+    visitor.visitTernaryExpr(*this);
+  }
+
+  const std::unique_ptr<Expr> condition;
   const std::unique_ptr<Expr> left;
   const std::unique_ptr<Expr> right;
 };

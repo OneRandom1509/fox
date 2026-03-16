@@ -14,6 +14,7 @@ public:
   void visitLiteralExpr(const Literal &expr) override;
   void visitUnaryExpr(const Unary &expr) override;
   void visitCommaExpr(const Comma &expr) override;
+  void visitTernaryExpr(const Ternary &expr) override;
 
 private:
   std::string result;

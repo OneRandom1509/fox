@@ -136,7 +136,9 @@ auto main(int argc, char *argv[]) -> int
        {"Grouping", "std::unique_ptr<Expr> expression"},
        {"Literal", "literal_t value"},
        {"Unary", "Token operator_, std::unique_ptr<Expr> right"},
-       {"Comma", "std::unique_ptr<Expr> left, std::unique_ptr<Expr> right"}};
+       {"Comma", "std::unique_ptr<Expr> left, std::unique_ptr<Expr> right"},
+       {"Ternary", "std::unique_ptr<Expr> condition, std::unique_ptr<Expr> "
+                   "left, std::unique_ptr<Expr> right"}};
 
   defineAst(outputDir, "Expr", exprTypes);
 

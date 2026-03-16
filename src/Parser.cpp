@@ -29,14 +29,37 @@ auto Parser::parse() -> std::unique_ptr<Expr>
     }
 }
 
-// comma          → expression ("," comma)*
+// comma          → ternary ("," comma)*
 auto Parser::comma() -> std::unique_ptr<Expr>
 {
-  auto expr = expression();
+  auto expr = ternary();
   while(match({TokenType::COMMA}))
     {
       auto right = comma();
       expr = std::make_unique<Comma>(std::move(expr), std::move(right));
+    }
+
+  return expr;
+}
+
+// ternary        → expression "?" ternary ":" ternary | expression ;
+auto Parser::ternary() -> std::unique_ptr<Expr>
+{
+  auto expr = expression();
+
+  if(match({TokenType::QUESTION}))
+    {
+      auto left = ternary();
+      if(match({TokenType::COLON}))
+        {
+          auto right = ternary();
+          expr = std::make_unique<Ternary>(std::move(expr), std::move(left),
+                                           std::move(right));
+        }
+      else
+        {
+          throw error(previous(), "Incomplete Ternary Expression.");
+        }
     }
 
   return expr;

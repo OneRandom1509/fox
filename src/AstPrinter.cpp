@@ -38,6 +38,12 @@ void AstPrinter::visitCommaExpr(const Comma &expr)
   result = parenthesize(",", {expr.left.get(), expr.right.get()});
 }
 
+void AstPrinter::visitTernaryExpr(const Ternary &expr)
+{
+  result = parenthesize(
+    "?:", {expr.condition.get(), expr.left.get(), expr.right.get()});
+}
+
 auto AstPrinter::parenthesize(const std::string &name,
                               std::initializer_list<const Expr *> exprs)
   -> std::string

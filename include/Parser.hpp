@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Executor.hpp"
 #include "Expr.hpp"
 #include "Token.hpp"
@@ -26,8 +28,11 @@ private:
   class ParseError : public std::exception
   {};
 
-  // comma          → expression "," comma
+  // comma          → expression ("," comma)* ;
   auto comma() -> std::unique_ptr<Expr>;
+
+  // ternary        → expression "?" ternary ":" ternary | expression ;
+  auto ternary() -> std::unique_ptr<Expr>;
 
   // expression     → equality ;
   auto expression() -> std::unique_ptr<Expr>;

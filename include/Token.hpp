@@ -19,6 +19,8 @@ enum class TokenType
   SEMICOLON,
   SLASH,
   STAR,
+  QUESTION,
+  COLON,
 
   // Double Character Tokens
   BANG,

@@ -27,6 +27,7 @@ set(FOX_SOURCES
     src/Token.cpp
     src/Scanner.cpp
     src/AstPrinter.cpp
+    src/Parser.cpp
 )
 
 # ------------------------------------------------

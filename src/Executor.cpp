@@ -1,5 +1,6 @@
 #include "Executor.hpp"
 #include <ios>
+#include "AstPrinter.hpp"
 #include "Constants.hpp"
 #include <iostream>
 #include <sysexits.h>
@@ -8,6 +9,7 @@
 #include <string>
 #include "Scanner.hpp"
 #include "Token.hpp"
+#include "Parser.hpp"
 
 std::string Executor::source = "";
 bool Executor::hadError = false;
@@ -56,11 +58,21 @@ void Executor::run()
   Scanner scanner(*this);
   std::vector<Token> tokens = scanner.scanTokens();
 
-  for(auto token : tokens)
-    {
-      std::cout << token.toString() << std::endl;
-    }
-  std::cout << std::endl;
+  // for(auto token : tokens)
+  //   {
+  //     std::cout << token.toString() << std::endl;
+  //   }
+  // std::cout << std::endl;
+  //
+  Parser parser(*this, tokens);
+  auto expression = parser.parse();
+
+  // Stop if there's a syntax error;
+  if(hadError)
+    return;
+
+  AstPrinter ap;
+  std::cout << ap.print(*expression) << std::endl;
 }
 
 void Executor::error(int line, std::string message)

@@ -131,11 +131,11 @@ int main(int argc, char *argv[])
   std::string outputDir = argv[1];
 
   std::vector<TypeDef> exprTypes
-    = {{"Binary", "std::shared_ptr<Expr> left, Token operator_, "
-                  "std::shared_ptr<Expr> right"},
-       {"Grouping", "std::shared_ptr<Expr> expression"},
+    = {{"Binary", "std::unique_ptr<Expr> left, Token operator_, "
+                  "std::unique_ptr<Expr> right"},
+       {"Grouping", "std::unique_ptr<Expr> expression"},
        {"Literal", "literal_t value"},
-       {"Unary", "Token operator_, std::shared_ptr<Expr> right"}};
+       {"Unary", "Token operator_, std::unique_ptr<Expr> right"}};
 
   defineAst(outputDir, "Expr", exprTypes);
 

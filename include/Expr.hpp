@@ -30,8 +30,8 @@ public:
 class Binary : public Expr
 {
 public:
-  Binary(std::shared_ptr<Expr> left, Token operator_,
-         std::shared_ptr<Expr> right)
+  Binary(std::unique_ptr<Expr> left, Token operator_,
+         std::unique_ptr<Expr> right)
       : left(std::move(left)), operator_(std::move(operator_)),
         right(std::move(right))
   {}
@@ -41,15 +41,15 @@ public:
     visitor.visitBinaryExpr(*this);
   }
 
-  const std::shared_ptr<Expr> left;
+  const std::unique_ptr<Expr> left;
   const Token operator_;
-  const std::shared_ptr<Expr> right;
+  const std::unique_ptr<Expr> right;
 };
 
 class Grouping : public Expr
 {
 public:
-  Grouping(std::shared_ptr<Expr> expression)
+  Grouping(std::unique_ptr<Expr> expression)
       : expression(std::move(expression))
   {}
 
@@ -58,7 +58,7 @@ public:
     visitor.visitGroupingExpr(*this);
   }
 
-  const std::shared_ptr<Expr> expression;
+  const std::unique_ptr<Expr> expression;
 };
 
 class Literal : public Expr
@@ -77,7 +77,7 @@ public:
 class Unary : public Expr
 {
 public:
-  Unary(Token operator_, std::shared_ptr<Expr> right)
+  Unary(Token operator_, std::unique_ptr<Expr> right)
       : operator_(std::move(operator_)), right(std::move(right))
   {}
 
@@ -87,5 +87,5 @@ public:
   }
 
   const Token operator_;
-  const std::shared_ptr<Expr> right;
+  const std::unique_ptr<Expr> right;
 };

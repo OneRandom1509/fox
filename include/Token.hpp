@@ -3,7 +3,7 @@
 #include <string>
 #include <variant>
 
-using literal_t = std::variant<std::monostate, double, std::string>;
+using literal_t = std::variant<std::monostate, double, std::string, bool>;
 
 enum class TokenType
 {

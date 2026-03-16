@@ -45,7 +45,7 @@ std::string Token::tokenTypeString()
     case TokenType::AND: return "AND";
     case TokenType::CLASS: return "CLASS";
     case TokenType::ELSE: return "ELSE";
-    case TokenType::FALSE: return "FLASE";
+    case TokenType::FALSE: return "FALSE";
     case TokenType::FUN: return "FUN";
     case TokenType::FOR: return "FOR";
     case TokenType::IF: return "IF";
@@ -71,6 +71,15 @@ std::string literalToString(literal_t literal)
     return "nil";
   else if(std::holds_alternative<double>(literal))
     return std::to_string(std::get<double>(literal));
+  else if(std::holds_alternative<std::string>(literal))
+    {
+      return std::get<std::string>(literal);
+    }
   else
-    return std::get<std::string>(literal);
+    {
+      if(std::get<bool>(literal) == true)
+        return "true";
+      else
+        return "false";
+    }
 }

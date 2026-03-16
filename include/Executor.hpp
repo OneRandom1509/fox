@@ -1,4 +1,5 @@
 #pragma once
+#include "Token.hpp"
 #include <string>
 
 class Executor
@@ -11,6 +12,7 @@ public:
   void runPrompt();
 
   static void error(int line, std::string message);
+  static void error(Token token, std::string message);
 
 private:
   static bool hadError;

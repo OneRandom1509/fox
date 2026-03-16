@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include "Scanner.hpp"
+#include "Token.hpp"
 
 std::string Executor::source = "";
 bool Executor::hadError = false;
@@ -65,6 +66,14 @@ void Executor::run()
 void Executor::error(int line, std::string message)
 {
   report(line, "", message);
+}
+
+void Executor::error(Token token, std::string message)
+{
+  if(token.type == TokenType::EOF_TOK)
+    report(token.line, " at end", message);
+  else
+    report(token.line, " at '" + token.lexeme + "'", message);
 }
 
 void Executor::report(int line, std::string where, std::string message)

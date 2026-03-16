@@ -21,12 +21,26 @@ auto Parser::parse() -> std::unique_ptr<Expr>
 {
   try
     {
-      return expression();
+      return comma();
     }
   catch(ParseError &error)
     {
       return nullptr;
     }
+}
+
+// comma          → expression ("," comma)*
+auto Parser::comma() -> std::unique_ptr<Expr>
+{
+  auto expr = expression();
+  while(match({TokenType::COMMA}))
+    {
+      Token op = previous();
+      auto right = comma();
+      expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
+    }
+
+  return expr;
 }
 
 // expression     → equality ;

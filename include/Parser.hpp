@@ -26,6 +26,9 @@ private:
   class ParseError : public std::exception
   {};
 
+  // comma          → expression "," comma
+  auto comma() -> std::unique_ptr<Expr>;
+
   // expression     → equality ;
   auto expression() -> std::unique_ptr<Expr>;
 

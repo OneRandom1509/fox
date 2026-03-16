@@ -7,7 +7,7 @@
 class AstPrinter : public Visitor
 {
 public:
-  std::string print(const Expr &expr);
+  auto print(const Expr &expr) -> std::string;
 
   void visitBinaryExpr(const Binary &expr) override;
   void visitGroupingExpr(const Grouping &expr) override;
@@ -17,6 +17,6 @@ public:
 private:
   std::string result;
 
-  std::string
-  parenthesize(const std::string &name, std::vector<const Expr *> exprs);
+  auto parenthesize(const std::string &name, std::vector<const Expr *> exprs)
+    -> std::string;
 };

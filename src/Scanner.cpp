@@ -21,7 +21,7 @@ Scanner::Scanner(Executor &executor)
     : source(std::move(executor.source)), executor(executor)
 {}
 
-std::vector<Token> Scanner::scanTokens()
+auto Scanner::scanTokens() -> std::vector<Token>
 {
   while(!isAtEnd())
     {
@@ -34,7 +34,7 @@ std::vector<Token> Scanner::scanTokens()
   return tokens;
 }
 
-bool Scanner::isAtEnd() { return current >= source.length(); }
+auto Scanner::isAtEnd() -> bool { return current >= source.length(); }
 
 void Scanner::scanToken()
 {
@@ -124,7 +124,7 @@ void Scanner::scanToken()
     }
 }
 
-char Scanner::advance() { return source.at(current++); }
+auto Scanner::advance() -> char { return source.at(current++); }
 
 void Scanner::addToken(TokenType type) { addToken(type, std::monostate{}); }
 
@@ -135,7 +135,7 @@ void Scanner::addToken(TokenType type, literal_t literal)
 }
 
 // basically a one character look-ahead
-bool Scanner::match(char expected)
+auto Scanner::match(char expected) -> bool
 {
   if(isAtEnd())
     return false;
@@ -146,7 +146,7 @@ bool Scanner::match(char expected)
   return true;
 }
 
-char Scanner::peek()
+auto Scanner::peek() -> char
 {
   if(isAtEnd())
     return '\0';
@@ -194,7 +194,7 @@ void Scanner::number()
            std::stod(source.substr(start, current - start)));
 }
 
-char Scanner::peekNext()
+auto Scanner::peekNext() -> char
 {
   if(current + 1 >= source.length())
     return '\0';
@@ -215,7 +215,7 @@ void Scanner::identifier()
   addToken(type);
 }
 
-bool Scanner::isalpha(char c)
+auto Scanner::isalpha(char c) -> bool
 {
   if(std::isalpha(c) || c == '_')
     return true;
@@ -223,7 +223,7 @@ bool Scanner::isalpha(char c)
     return false;
 }
 
-bool Scanner::isalnum(char c)
+auto Scanner::isalnum(char c) -> bool
 {
   if(std::isalnum(c) || c == '_')
     return true;

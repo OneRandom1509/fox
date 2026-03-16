@@ -7,13 +7,13 @@ Token::Token(TokenType type, std::string lexeme, literal_t literal, int line)
       literal(std::move(literal)), line(std::move(line))
 {}
 
-std::string Token::toString()
+auto Token::toString() -> std::string
 {
   return tokenTypeString() + " " + this->lexeme + " "
          + literalToString(literal);
 }
 
-std::string Token::tokenTypeString()
+auto Token::tokenTypeString() -> std::string
 {
   switch(type)
     {
@@ -65,7 +65,7 @@ std::string Token::tokenTypeString()
   return "UNKNOWN_TOKEN";
 }
 
-std::string literalToString(literal_t literal)
+auto literalToString(literal_t literal) -> std::string
 {
   if(std::holds_alternative<std::monostate>(literal))
     return "nil";

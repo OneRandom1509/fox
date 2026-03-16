@@ -11,6 +11,7 @@
 #include "Token.hpp"
 #include "Parser.hpp"
 
+// Initializing static variables
 std::string Executor::source = "";
 bool Executor::hadError = false;
 

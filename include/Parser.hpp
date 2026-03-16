@@ -17,7 +17,7 @@ class Parser
 public:
   Parser(Executor &executor, std::vector<Token> tokens);
 
-  std::unique_ptr<Expr> parse();
+  auto parse() -> std::unique_ptr<Expr>;
 
 private:
   std::vector<Token> tokens;
@@ -27,43 +27,43 @@ private:
   {};
 
   // expression     → equality ;
-  std::unique_ptr<Expr> expression();
+  auto expression() -> std::unique_ptr<Expr>;
 
   // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
-  std::unique_ptr<Expr> equality();
+  auto equality() -> std::unique_ptr<Expr>;
 
   // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-  std::unique_ptr<Expr> comparison();
+  auto comparison() -> std::unique_ptr<Expr>;
 
   // term           → factor ( ( "-" | "+" ) factor )* ;
-  std::unique_ptr<Expr> term();
+  auto term() -> std::unique_ptr<Expr>;
 
   // factor         → unary ( ( "/" | "*" ) unary )* ;
-  std::unique_ptr<Expr> factor();
+  auto factor() -> std::unique_ptr<Expr>;
 
   // unary          → ( "!" | "-" ) unary
   //                | primary ;
-  std::unique_ptr<Expr> unary();
+  auto unary() -> std::unique_ptr<Expr>;
 
   // primary        → NUMBER | STRING | "true" | "false" | "nil"
   //                | "(" expression ")" ;
-  std::unique_ptr<Expr> primary();
+  auto primary() -> std::unique_ptr<Expr>;
 
   void synchronize();
 
   // need to see what initializer_list exactly does
-  bool match(std::initializer_list<TokenType> types);
+  auto match(std::initializer_list<TokenType> types) -> bool;
 
-  bool check(TokenType type);
+  auto check(TokenType type) -> bool;
 
-  inline Token advance();
+  inline auto advance() -> Token;
 
-  inline bool isAtEnd();
+  inline auto isAtEnd() -> bool;
 
-  [[nodiscard]] const Token &peek() const;
-  [[nodiscard]] const Token &previous() const;
+  [[nodiscard]] auto peek() const -> const Token &;
+  [[nodiscard]] auto previous() const -> const Token &;
 
-  Token consume(TokenType type, std::string message);
+  auto consume(TokenType type, std::string message) -> Token;
 
-  ParseError error(Token token, std::string message);
+  auto error(Token token, std::string message) -> ParseError;
 };

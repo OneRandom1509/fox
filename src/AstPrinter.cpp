@@ -6,7 +6,7 @@
 #include <vector>
 #include "AstPrinter.hpp"
 
-std::string AstPrinter::print(const Expr &expr)
+auto AstPrinter::print(const Expr &expr) -> std::string
 {
   expr.accept(*this);
   return result;
@@ -33,8 +33,8 @@ void AstPrinter::visitUnaryExpr(const Unary &expr)
   result = parenthesize(expr.operator_.lexeme, {expr.right.get()});
 }
 
-std::string AstPrinter::parenthesize(const std::string &name,
-                                     std::vector<const Expr *> exprs)
+auto AstPrinter::parenthesize(const std::string &name,
+                              std::vector<const Expr *> exprs) -> std::string
 {
   std::stringstream builder;
 

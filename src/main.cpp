@@ -1,14 +1,10 @@
 #include <cstdlib>
 #include <sysexits.h>
 #include <iostream>
-#include "Token.hpp"
-#include "Expr.hpp"
-#include "AstPrinter.hpp"
-
 #include <string>
 #include "Executor.hpp"
 
-int main(int argc, char *argv[])
+auto main(int argc, char *argv[]) -> int
 {
   Executor executor;
   if(argc > 2)

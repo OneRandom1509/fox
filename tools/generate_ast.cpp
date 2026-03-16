@@ -11,7 +11,7 @@ struct TypeDef
   std::string fields;
 };
 
-std::vector<std::string> split(const std::string &str, char delim)
+auto split(const std::string &str, char delim) -> std::vector<std::string>
 {
   std::vector<std::string> result;
   std::stringstream ss(str);
@@ -120,7 +120,7 @@ void defineAst(const std::string &outputDir, const std::string &baseName,
     }
 }
 
-int main(int argc, char *argv[])
+auto main(int argc, char *argv[]) -> int
 {
   if(argc != 2)
     {

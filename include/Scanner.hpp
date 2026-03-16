@@ -7,7 +7,7 @@ class Scanner
 {
 public:
   Scanner(Executor &executor);
-  std::vector<Token> scanTokens();
+  auto scanTokens() -> std::vector<Token>;
 
 private:
   const std::string source;
@@ -18,8 +18,8 @@ private:
   Executor &executor;
   static const std::unordered_map<std::string, TokenType> keywords;
 
-  inline bool isAtEnd();
-  inline char advance();
+  inline auto isAtEnd() -> bool;
+  inline auto advance() -> char;
 
   void scanToken();
 
@@ -27,14 +27,14 @@ private:
   inline void addToken(TokenType type, literal_t literal);
 
   // simple one character look-ahead
-  inline bool match(char expected);
-  inline char peek();
-  inline char peekNext();
+  inline auto match(char expected) -> bool;
+  inline auto peek() -> char;
+  inline auto peekNext() -> char;
 
   void string();
   void number();
   void identifier();
 
-  bool isalpha(char c);
-  bool isalnum(char c);
+  auto isalpha(char c) -> bool;
+  auto isalnum(char c) -> bool;
 };

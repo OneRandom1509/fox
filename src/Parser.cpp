@@ -17,23 +17,23 @@ Parser::Parser(Executor &executor, std::vector<Token> tokens)
     : tokens(std::move(tokens)), executor(executor)
 {}
 
-std::unique_ptr<Expr> Parser::parse()
+auto Parser::parse() -> std::unique_ptr<Expr>
 {
   try
     {
       return expression();
     }
-  catch(ParseError error)
+  catch(ParseError &error)
     {
       return nullptr;
     }
 }
 
 // expression     → equality ;
-std::unique_ptr<Expr> Parser::expression() { return equality(); }
+auto Parser::expression() -> std::unique_ptr<Expr> { return equality(); }
 
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
-std::unique_ptr<Expr> Parser::equality()
+auto Parser::equality() -> std::unique_ptr<Expr>
 {
   auto expr = comparison();
 
@@ -48,7 +48,7 @@ std::unique_ptr<Expr> Parser::equality()
 }
 
 // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-std::unique_ptr<Expr> Parser::comparison()
+auto Parser::comparison() -> std::unique_ptr<Expr>
 {
   auto expr = term();
 
@@ -63,7 +63,7 @@ std::unique_ptr<Expr> Parser::comparison()
 }
 
 // term           → factor ( ( "-" | "+" ) factor )* ;
-std::unique_ptr<Expr> Parser::term()
+auto Parser::term() -> std::unique_ptr<Expr>
 {
   auto expr = factor();
 
@@ -78,7 +78,7 @@ std::unique_ptr<Expr> Parser::term()
 }
 
 // factor         → unary ( ( "/" | "*" ) unary )* ;
-std::unique_ptr<Expr> Parser::factor()
+auto Parser::factor() -> std::unique_ptr<Expr>
 {
   auto expr = unary();
 
@@ -94,7 +94,7 @@ std::unique_ptr<Expr> Parser::factor()
 
 // unary          → ( "!" | "-" ) unary
 //                | primary ;
-std::unique_ptr<Expr> Parser::unary()
+auto Parser::unary() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::BANG, TokenType::MINUS}))
     {
@@ -108,7 +108,7 @@ std::unique_ptr<Expr> Parser::unary()
 
 // primary        → NUMBER | STRING | "true" | "false" | "nil"
 //                | "(" expression ")" ;
-std::unique_ptr<Expr> Parser::primary()
+auto Parser::primary() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::FALSE}))
     return std::make_unique<Literal>(false);
@@ -155,7 +155,7 @@ void Parser::synchronize()
 }
 
 // need to see what initializer_list exactly does
-bool Parser::match(std::initializer_list<TokenType> types)
+auto Parser::match(std::initializer_list<TokenType> types) -> bool
 {
   for(auto type : types)
     {
@@ -169,30 +169,33 @@ bool Parser::match(std::initializer_list<TokenType> types)
   return false;
 }
 
-bool Parser::check(TokenType type)
+auto Parser::check(TokenType type) -> bool
 {
   if(isAtEnd())
     return false;
   return peek().type == type;
 }
 
-Token Parser::advance()
+auto Parser::advance() -> Token
 {
   if(!isAtEnd())
     current++;
   return previous();
 }
 
-bool Parser::isAtEnd() { return peek().type == TokenType::EOF_TOK; }
+auto Parser::isAtEnd() -> bool { return peek().type == TokenType::EOF_TOK; }
 
-[[nodiscard]] const Token &Parser::peek() const { return tokens.at(current); }
+[[nodiscard]] auto Parser::peek() const -> const Token &
+{
+  return tokens.at(current);
+}
 
-[[nodiscard]] const Token &Parser::previous() const
+[[nodiscard]] auto Parser::previous() const -> const Token &
 {
   return tokens.at(current - 1);
 }
 
-Token Parser::consume(TokenType type, std::string message)
+auto Parser::consume(TokenType type, std::string message) -> Token
 {
   if(check(type))
     return advance();
@@ -200,7 +203,7 @@ Token Parser::consume(TokenType type, std::string message)
   throw error(peek(), message);
 }
 
-Parser::ParseError Parser::error(Token token, std::string message)
+auto Parser::error(Token token, std::string message) -> Parser::ParseError
 {
   executor.error(token, message);
   return ParseError{};

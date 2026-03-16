@@ -66,11 +66,11 @@ public:
 
   Token(TokenType type, std::string lexeme, literal_t literal, int line);
 
-  std::string toString();
+  auto toString() -> std::string;
 
 private:
-  std::string tokenTypeString();
+  auto tokenTypeString() -> std::string;
 };
 
 // This doesn't look good, need to prolly have a common utils
-std::string literalToString(literal_t literal);
+auto literalToString(literal_t literal) -> std::string;

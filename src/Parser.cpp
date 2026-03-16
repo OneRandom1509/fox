@@ -12,7 +12,7 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// expression < equality < comparison < term < factor < unary < primary
+/// comma < expression < equality < comparison < term < factor < unary < primary
 Parser::Parser(Executor &executor, std::vector<Token> tokens)
     : tokens(std::move(tokens)), executor(executor)
 {}
@@ -35,9 +35,8 @@ auto Parser::comma() -> std::unique_ptr<Expr>
   auto expr = expression();
   while(match({TokenType::COMMA}))
     {
-      Token op = previous();
       auto right = comma();
-      expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
+      expr = std::make_unique<Comma>(std::move(expr), std::move(right));
     }
 
   return expr;

@@ -11,7 +11,7 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// expression < equality < comparison < term < factor < unary < primary
+/// comma < expression < equality < comparison < term < factor < unary < primary
 class Parser
 {
 public:

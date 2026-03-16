@@ -1,9 +1,9 @@
 #include "Expr.hpp"
 #include "Token.hpp"
+#include <initializer_list>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <vector>
 #include "AstPrinter.hpp"
 
 auto AstPrinter::print(const Expr &expr) -> std::string
@@ -33,8 +33,14 @@ void AstPrinter::visitUnaryExpr(const Unary &expr)
   result = parenthesize(expr.operator_.lexeme, {expr.right.get()});
 }
 
+void AstPrinter::visitCommaExpr(const Comma &expr)
+{
+  result = parenthesize(",", {expr.left.get(), expr.right.get()});
+}
+
 auto AstPrinter::parenthesize(const std::string &name,
-                              std::vector<const Expr *> exprs) -> std::string
+                              std::initializer_list<const Expr *> exprs)
+  -> std::string
 {
   std::stringstream builder;
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Expr.hpp"
+#include <initializer_list>
 #include <string>
-#include <vector>
 
 class AstPrinter : public Visitor
 {
@@ -13,10 +13,11 @@ public:
   void visitGroupingExpr(const Grouping &expr) override;
   void visitLiteralExpr(const Literal &expr) override;
   void visitUnaryExpr(const Unary &expr) override;
+  void visitCommaExpr(const Comma &expr) override;
 
 private:
   std::string result;
 
-  auto parenthesize(const std::string &name, std::vector<const Expr *> exprs)
-    -> std::string;
+  auto parenthesize(const std::string &name,
+                    std::initializer_list<const Expr *> exprs) -> std::string;
 };

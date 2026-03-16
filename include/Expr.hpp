@@ -8,6 +8,7 @@ class Binary;
 class Grouping;
 class Literal;
 class Unary;
+class Comma;
 
 class Visitor
 {
@@ -16,6 +17,7 @@ public:
   virtual void visitGroupingExpr(const Grouping &expr) = 0;
   virtual void visitLiteralExpr(const Literal &expr) = 0;
   virtual void visitUnaryExpr(const Unary &expr) = 0;
+  virtual void visitCommaExpr(const Comma &expr) = 0;
   virtual ~Visitor() = default;
 };
 
@@ -87,5 +89,21 @@ public:
   }
 
   const Token operator_;
+  const std::unique_ptr<Expr> right;
+};
+
+class Comma : public Expr
+{
+public:
+  Comma(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right)
+      : left(std::move(left)), right(std::move(right))
+  {}
+
+  void accept(Visitor &visitor) const override
+  {
+    visitor.visitCommaExpr(*this);
+  }
+
+  const std::unique_ptr<Expr> left;
   const std::unique_ptr<Expr> right;
 };

@@ -32,6 +32,11 @@ auto Parser::parse() -> std::unique_ptr<Expr>
 // comma          → ternary ("," comma)*
 auto Parser::comma() -> std::unique_ptr<Expr>
 {
+  if(match({TokenType::COMMA}))
+    {
+      throw error(previous(), "Expect expression before COMMA.");
+    }
+
   auto expr = ternary();
   while(match({TokenType::COMMA}))
     {
@@ -45,7 +50,16 @@ auto Parser::comma() -> std::unique_ptr<Expr>
 // ternary        → expression "?" ternary ":" ternary | expression ;
 auto Parser::ternary() -> std::unique_ptr<Expr>
 {
+  if(match({TokenType::QUESTION}))
+    {
+      throw error(previous(), "Expect condition before QUESTION.");
+    }
   auto expr = expression();
+
+  if(match({TokenType::COLON}))
+    {
+      throw error(previous(), "Expect QUESTION before COLON.");
+    }
 
   if(match({TokenType::QUESTION}))
     {
@@ -71,6 +85,12 @@ auto Parser::expression() -> std::unique_ptr<Expr> { return equality(); }
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 auto Parser::equality() -> std::unique_ptr<Expr>
 {
+  if(match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL}))
+    {
+      throw error(previous(), "Expect expression before "
+                                + tokenTypeString(previous().type) + ".");
+    }
+
   auto expr = comparison();
 
   while(match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL}))
@@ -86,6 +106,12 @@ auto Parser::equality() -> std::unique_ptr<Expr>
 // comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 auto Parser::comparison() -> std::unique_ptr<Expr>
 {
+  if(match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESSER,
+            TokenType::LESSER_EQUAL}))
+    {
+      throw error(previous(), "Expect expression before "
+                                + tokenTypeString(previous().type) + ".");
+    }
   auto expr = term();
 
   while(match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESSER,
@@ -101,6 +127,11 @@ auto Parser::comparison() -> std::unique_ptr<Expr>
 // term           → factor ( ( "-" | "+" ) factor )* ;
 auto Parser::term() -> std::unique_ptr<Expr>
 {
+  if(match({TokenType::PLUS}))
+    {
+      throw error(previous(), "Expect expression before "
+                                + tokenTypeString(previous().type) + ".");
+    }
   auto expr = factor();
 
   while(match({TokenType::MINUS, TokenType::PLUS}))
@@ -116,6 +147,11 @@ auto Parser::term() -> std::unique_ptr<Expr>
 // factor         → unary ( ( "/" | "*" ) unary )* ;
 auto Parser::factor() -> std::unique_ptr<Expr>
 {
+  if(match({TokenType::SLASH, TokenType::STAR}))
+    {
+      throw error(previous(), "Expect expression before "
+                                + tokenTypeString(previous().type) + ".");
+    }
   auto expr = unary();
 
   while(match({TokenType::SLASH, TokenType::STAR}))

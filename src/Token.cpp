@@ -9,11 +9,11 @@ Token::Token(TokenType type, std::string lexeme, literal_t literal, int line)
 
 auto Token::toString() -> std::string
 {
-  return tokenTypeString() + " " + this->lexeme + " "
+  return tokenTypeString(type) + " " + this->lexeme + " "
          + literalToString(literal);
 }
 
-auto Token::tokenTypeString() -> std::string
+auto tokenTypeString(TokenType type) -> std::string
 {
   switch(type)
     {

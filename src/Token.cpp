@@ -7,7 +7,7 @@ Token::Token(TokenType type, std::string lexeme, literal_t literal, int line)
       literal(std::move(literal)), line(std::move(line))
 {}
 
-auto Token::toString() -> std::string
+auto Token::toString() const -> std::string
 {
   return tokenTypeString(type) + " " + this->lexeme + " "
          + literalToString(literal);

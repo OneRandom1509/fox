@@ -14,6 +14,8 @@
 // Initializing static variables
 std::string Executor::source = "";
 bool Executor::hadError = false;
+bool Executor::hadRuntimeError = false;
+Interpreter Executor::interpreter = Interpreter();
 
 void Executor::runFile(std::string path)
 {
@@ -28,6 +30,8 @@ void Executor::runFile(std::string path)
   run();
   if(hadError)
     exit(EX_DATAERR);
+  if(hadRuntimeError)
+    exit(EX_SOFTWARE);
 }
 
 void Executor::runPrompt()
@@ -65,13 +69,14 @@ void Executor::run()
   //   }
   // std::cout << std::endl;
   //
-  Parser parser(*this, tokens);
+  Parser parser(tokens);
   auto expression = parser.parse();
 
   // Stop if there's a syntax error;
   if(hadError)
     return;
 
+  interpreter.interpret(*expression);
   AstPrinter ap;
   std::cout << ap.print(*expression) << std::endl;
 }
@@ -94,4 +99,10 @@ void Executor::report(int line, std::string where, std::string message)
   std::cerr << "[line " << line << "] Error" << where << ": " << message
             << std::endl;
   hadError = true;
+}
+void Executor::runtimeError(RuntimeError &error)
+{
+  std::cerr << error.what() << "\n[line" << error.token.line << "]"
+            << std::endl;
+  hadRuntimeError = true;
 }

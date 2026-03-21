@@ -55,8 +55,7 @@ auto AstPrinter::parenthesize(const std::string &name,
   for(const Expr *expr : exprs)
     {
       builder << " ";
-      AstPrinter printer;
-      builder << printer.print(*expr);
+      builder << this->print(*expr);
     }
 
   builder << ")";

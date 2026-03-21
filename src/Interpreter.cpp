@@ -164,6 +164,9 @@ auto Interpreter::visitCommaExpr(const Comma &expr) -> literal_t
 
 auto Interpreter::visitTernaryExpr(const Ternary &expr) -> literal_t
 {
-  // TODO
-  return std::monostate{};
+  literal_t condition = evaluate(*expr.condition);
+  if(isTruthy(condition))
+    return evaluate(*expr.left);
+
+  return evaluate(*expr.right);
 }

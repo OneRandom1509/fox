@@ -80,24 +80,27 @@ auto Interpreter::visitBinaryExpr(const Binary &expr) -> literal_t
       return std::get<double>(left) - std::get<double>(right);
 
     case TokenType::PLUS:
-      if(std::holds_alternative<std::string>(left)
-         && std::holds_alternative<std::string>(right))
-        return std::get<std::string>(left) + std::get<std::string>(right);
       if(std::holds_alternative<double>(left)
          && std::holds_alternative<double>(right))
         return std::get<double>(left) + std::get<double>(right);
-      throw RuntimeError(expr.operator_,
-                         "Operands must be either two strings or two numbers");
+      return stringify(left) + stringify(right);
 
     case TokenType::SLASH:
       checkNumberOperands(expr.operator_, left, right);
+      if(std::get<double>(right) == 0)
+        throw RuntimeError(
+          expr.operator_, "Division by 0 will result in undefined behaviour.");
       return std::get<double>(left) / std::get<double>(right);
+
     case TokenType::STAR:
       checkNumberOperands(expr.operator_, left, right);
       return std::get<double>(left) * std::get<double>(right);
 
     case TokenType::BANG_EQUAL: return !isEqual(left, right);
     case TokenType::EQUAL_EQUAL: return isEqual(left, right);
+
+    case TokenType::AND: return isTruthy(left) && isTruthy(right);
+    case TokenType::OR: return isTruthy(left) || isTruthy(right);
 
     default: break;
     }
@@ -127,6 +130,12 @@ auto Interpreter::isTruthy(literal_t literal) const -> bool
     return false;
   if(std::holds_alternative<bool>(literal))
     return std::get<bool>(literal);
+  if(std::holds_alternative<double>(literal))
+    {
+      if(std::get<double>(literal) == 0)
+        return false;
+    }
+
   return true;
 }
 
@@ -158,8 +167,10 @@ auto Interpreter::visitLiteralExpr(const Literal &expr) -> literal_t
 
 auto Interpreter::visitCommaExpr(const Comma &expr) -> literal_t
 {
-  // TODO
-  return std::monostate{};
+  literal_t left = evaluate(*expr.left);
+  literal_t right = evaluate(*expr.right);
+
+  return right;
 }
 
 auto Interpreter::visitTernaryExpr(const Ternary &expr) -> literal_t

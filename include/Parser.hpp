@@ -17,14 +17,13 @@
 class Parser
 {
 public:
-  Parser(Executor &executor, std::vector<Token> tokens);
+  Parser(std::vector<Token> tokens);
 
   auto parse() -> std::unique_ptr<Expr>;
 
 private:
   std::vector<Token> tokens;
   size_t current = 0;
-  Executor &executor;
   class ParseError : public std::exception
   {};
 

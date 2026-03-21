@@ -13,9 +13,7 @@
 ///
 /// The precedence order is:
 /// comma < expression < equality < comparison < term < factor < unary < primary
-Parser::Parser(Executor &executor, std::vector<Token> tokens)
-    : tokens(std::move(tokens)), executor(executor)
-{}
+Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
 
 auto Parser::parse() -> std::unique_ptr<Expr>
 {
@@ -56,10 +54,10 @@ auto Parser::ternary() -> std::unique_ptr<Expr>
     }
   auto expr = expression();
 
-  if(match({TokenType::COLON}))
-    {
-      throw error(previous(), "Expect QUESTION before COLON.");
-    }
+  // if(match({TokenType::COLON}))
+  //   {
+  //     throw error(previous(), "Expect QUESTION before COLON.");
+  //   }
 
   if(match({TokenType::QUESTION}))
     {
@@ -277,6 +275,6 @@ auto Parser::consume(TokenType type, std::string message) -> Token
 
 auto Parser::error(Token token, std::string message) -> Parser::ParseError
 {
-  executor.error(token, message);
+  Executor::error(token, message);
   return ParseError{};
 }

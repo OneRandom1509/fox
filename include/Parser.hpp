@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Executor.hpp"
 #include "Expr.hpp"
 #include "Token.hpp"
 #include <exception>
@@ -13,7 +12,8 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// comma < expression < equality < comparison < term < factor < unary < primary
+/// comma < expression < logical < equality < comparison < term < factor <
+/// unary < primary
 class Parser
 {
 public:
@@ -33,8 +33,11 @@ private:
   // ternary        → expression "?" ternary ":" ternary | expression ;
   auto ternary() -> std::unique_ptr<Expr>;
 
-  // expression     → equality ;
+  // expression     → logical ;
   auto expression() -> std::unique_ptr<Expr>;
+
+  // logical        → equality ( ( "and" | "or" ) equality )* ;
+  auto logical() -> std::unique_ptr<Expr>;
 
   // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
   auto equality() -> std::unique_ptr<Expr>;

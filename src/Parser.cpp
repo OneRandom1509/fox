@@ -12,7 +12,8 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// comma < expression < equality < comparison < term < factor < unary < primary
+/// comma < expression < logical < equality < comparison < term < factor <
+/// unary < primary
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
 
 auto Parser::parse() -> std::unique_ptr<Expr>
@@ -45,6 +46,7 @@ auto Parser::comma() -> std::unique_ptr<Expr>
   return expr;
 }
 
+// TODO: catch only colon operator used error
 // ternary        → expression "?" ternary ":" ternary | expression ;
 auto Parser::ternary() -> std::unique_ptr<Expr>
 {
@@ -53,11 +55,6 @@ auto Parser::ternary() -> std::unique_ptr<Expr>
       throw error(previous(), "Expect condition before QUESTION.");
     }
   auto expr = expression();
-
-  // if(match({TokenType::COLON}))
-  //   {
-  //     throw error(previous(), "Expect QUESTION before COLON.");
-  //   }
 
   if(match({TokenType::QUESTION}))
     {
@@ -77,8 +74,29 @@ auto Parser::ternary() -> std::unique_ptr<Expr>
   return expr;
 }
 
-// expression     → equality ;
-auto Parser::expression() -> std::unique_ptr<Expr> { return equality(); }
+// expression     → logical ;
+auto Parser::expression() -> std::unique_ptr<Expr> { return logical(); }
+
+// logical        → equality ( ( "and" | "or" ) equality )* ;
+auto Parser::logical() -> std::unique_ptr<Expr>
+{
+  if(match({TokenType::AND, TokenType::OR}))
+    {
+      throw error(previous(), "Expect expression before "
+                                + tokenTypeString(previous().type) + ".");
+    }
+
+  auto expr = equality();
+
+  while(match({TokenType::AND, TokenType::OR}))
+    {
+      Token op = previous();
+      auto right = equality();
+      expr = std::make_unique<Binary>(std::move(expr), op, std::move(right));
+    }
+
+  return expr;
+}
 
 // equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 auto Parser::equality() -> std::unique_ptr<Expr>

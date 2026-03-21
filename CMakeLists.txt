@@ -28,6 +28,8 @@ set(FOX_SOURCES
     src/Scanner.cpp
     src/AstPrinter.cpp
     src/Parser.cpp
+    src/RuntimeError.cpp
+    src/Interpreter.cpp
 )
 
 # ------------------------------------------------

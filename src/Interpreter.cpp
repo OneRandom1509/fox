@@ -39,20 +39,44 @@ auto Interpreter::stringify(literal_t literal) const -> std::string
   return std::get<std::string>(literal);
 }
 
+auto Interpreter::checkNumberOperands(literal_t left, literal_t right) const
+  -> bool
+{
+  if((std::holds_alternative<double>(left)
+      || std::holds_alternative<bool>(left))
+     && (std::holds_alternative<double>(right)
+         || std::holds_alternative<bool>(right)))
+    return true;
+  return false;
+}
+
 void Interpreter::checkNumberOperands(Token op, literal_t left,
                                       literal_t right) const
 {
-  if(std::holds_alternative<double>(left)
-     && std::holds_alternative<double>(right))
+  if((std::holds_alternative<double>(left)
+      || std::holds_alternative<bool>(left))
+     && (std::holds_alternative<double>(right)
+         || std::holds_alternative<bool>(right)))
     return;
   throw RuntimeError(op, "Operands must be numbers");
 }
 
 void Interpreter::checkNumberOperand(Token op, literal_t operand) const
 {
-  if(std::holds_alternative<double>(operand))
+  if(std::holds_alternative<double>(operand)
+     || std::holds_alternative<bool>(operand))
     return;
   throw RuntimeError(op, "Operand must be a number");
+}
+
+auto Interpreter::asDouble(const literal_t &value) const -> double
+{
+  if(std::holds_alternative<double>(value))
+    {
+      return std::get<double>(value);
+    }
+  // Convert bool: true -> 1.0, false -> 0.0
+  return std::get<bool>(value) ? 1.0 : 0.0;
 }
 
 auto Interpreter::visitBinaryExpr(const Binary &expr) -> literal_t
@@ -64,37 +88,36 @@ auto Interpreter::visitBinaryExpr(const Binary &expr) -> literal_t
     {
     case TokenType::GREATER:
       checkNumberOperands(expr.operator_, left, right);
-      return std::get<double>(left) > std::get<double>(right);
+      return asDouble(left) > asDouble(right);
     case TokenType::GREATER_EQUAL:
       checkNumberOperands(expr.operator_, left, right);
-      return std::get<double>(left) >= std::get<double>(right);
+      return asDouble(left) < asDouble(right);
     case TokenType::LESSER:
       checkNumberOperands(expr.operator_, left, right);
-      return std::get<double>(left) < std::get<double>(right);
+      return asDouble(left) < asDouble(right);
     case TokenType::LESSER_EQUAL:
       checkNumberOperands(expr.operator_, left, right);
-      return std::get<double>(left) <= std::get<double>(right);
+      return asDouble(left) <= asDouble(right);
 
     case TokenType::MINUS:
       checkNumberOperands(expr.operator_, left, right);
-      return std::get<double>(left) - std::get<double>(right);
+      return asDouble(left) - asDouble(right);
 
     case TokenType::PLUS:
-      if(std::holds_alternative<double>(left)
-         && std::holds_alternative<double>(right))
-        return std::get<double>(left) + std::get<double>(right);
+      if(checkNumberOperands(left, right))
+        return asDouble(left) + asDouble(right);
       return stringify(left) + stringify(right);
 
     case TokenType::SLASH:
       checkNumberOperands(expr.operator_, left, right);
-      if(std::get<double>(right) == 0)
+      if(asDouble(right) == 0)
         throw RuntimeError(
           expr.operator_, "Division by 0 will result in undefined behaviour.");
-      return std::get<double>(left) / std::get<double>(right);
+      return asDouble(left) / asDouble(right);
 
     case TokenType::STAR:
       checkNumberOperands(expr.operator_, left, right);
-      return std::get<double>(left) * std::get<double>(right);
+      return asDouble(left) * asDouble(right);
 
     case TokenType::BANG_EQUAL: return !isEqual(left, right);
     case TokenType::EQUAL_EQUAL: return isEqual(left, right);
@@ -115,6 +138,8 @@ auto Interpreter::isEqual(literal_t a, literal_t b) const -> bool
     return true;
   if(std::holds_alternative<std::monostate>(a))
     return false;
+  if(checkNumberOperands(a, b))
+    return asDouble(a) == asDouble(b);
 
   return a == b;
 }
@@ -148,7 +173,7 @@ auto Interpreter::visitUnaryExpr(const Unary &expr) -> literal_t
     case TokenType::BANG: return isTruthy(right);
     case TokenType::MINUS:
       checkNumberOperand(expr.operator_, right);
-      return std::get<double>(right) * -1;
+      return asDouble(right) * -1;
     default: break;
     }
 

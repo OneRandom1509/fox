@@ -6,6 +6,11 @@ project(
     LANGUAGES CXX
 )
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified.")
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build." FORCE)
+endif()
+
 # ------------------------------------------------
 # Compiler settings
 # ------------------------------------------------
@@ -26,7 +31,7 @@ set(FOX_SOURCES
     src/Executor.cpp
     src/Token.cpp
     src/Scanner.cpp
-    src/AstPrinter.cpp
+    #    src/AstPrinter.cpp
     src/Parser.cpp
     src/RuntimeError.cpp
     src/Interpreter.cpp

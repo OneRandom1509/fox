@@ -11,7 +11,7 @@ class Unary;
 class Comma;
 class Ternary;
 
-template <typename R> class Visitor
+template <typename R> class VisitorExpr
 {
 public:
   virtual auto visitBinaryExpr(const class Binary &expr) -> R = 0;
@@ -20,16 +20,15 @@ public:
   virtual auto visitUnaryExpr(const class Unary &expr) -> R = 0;
   virtual auto visitCommaExpr(const class Comma &expr) -> R = 0;
   virtual auto visitTernaryExpr(const class Ternary &expr) -> R = 0;
-  virtual ~Visitor() = default;
+  virtual ~VisitorExpr() = default;
 };
 
-// Abstract class for Expr
 class Expr
 {
 public:
   virtual ~Expr() = default;
-  virtual auto accept(Visitor<void> &visitor) const -> void = 0;
-  virtual auto accept(Visitor<literal_t> &visitor) const -> literal_t = 0;
+  virtual auto accept(VisitorExpr<void> &visitor) const -> void = 0;
+  virtual auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t = 0;
 };
 
 class Binary : public Expr
@@ -41,17 +40,12 @@ public:
         right(std::move(right))
   {}
 
-  auto accept(Visitor<void> &visitor) const -> void override
+  auto accept(VisitorExpr<void> &visitor) const -> void override
   {
     visitor.visitBinaryExpr(*this);
   }
 
-  auto accept(Visitor<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitBinaryExpr(*this);
-  }
-
-  template <typename R> auto accept(Visitor<R> &visitor) const -> R
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
   {
     return visitor.visitBinaryExpr(*this);
   }
@@ -68,17 +62,12 @@ public:
       : expression(std::move(expression))
   {}
 
-  auto accept(Visitor<void> &visitor) const -> void override
+  auto accept(VisitorExpr<void> &visitor) const -> void override
   {
     visitor.visitGroupingExpr(*this);
   }
 
-  auto accept(Visitor<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitGroupingExpr(*this);
-  }
-
-  template <typename R> auto accept(Visitor<R> &visitor) const -> R
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
   {
     return visitor.visitGroupingExpr(*this);
   }
@@ -91,17 +80,12 @@ class Literal : public Expr
 public:
   Literal(literal_t value) : value(std::move(value)) {}
 
-  auto accept(Visitor<void> &visitor) const -> void override
+  auto accept(VisitorExpr<void> &visitor) const -> void override
   {
     visitor.visitLiteralExpr(*this);
   }
 
-  auto accept(Visitor<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitLiteralExpr(*this);
-  }
-
-  template <typename R> auto accept(Visitor<R> &visitor) const -> R
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
   {
     return visitor.visitLiteralExpr(*this);
   }
@@ -116,17 +100,12 @@ public:
       : operator_(std::move(operator_)), right(std::move(right))
   {}
 
-  auto accept(Visitor<void> &visitor) const -> void override
+  auto accept(VisitorExpr<void> &visitor) const -> void override
   {
     visitor.visitUnaryExpr(*this);
   }
 
-  auto accept(Visitor<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitUnaryExpr(*this);
-  }
-
-  template <typename R> auto accept(Visitor<R> &visitor) const -> R
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
   {
     return visitor.visitUnaryExpr(*this);
   }
@@ -142,17 +121,12 @@ public:
       : left(std::move(left)), right(std::move(right))
   {}
 
-  auto accept(Visitor<void> &visitor) const -> void override
+  auto accept(VisitorExpr<void> &visitor) const -> void override
   {
     visitor.visitCommaExpr(*this);
   }
 
-  auto accept(Visitor<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitCommaExpr(*this);
-  }
-
-  template <typename R> auto accept(Visitor<R> &visitor) const -> R
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
   {
     return visitor.visitCommaExpr(*this);
   }
@@ -170,17 +144,12 @@ public:
         right(std::move(right))
   {}
 
-  auto accept(Visitor<void> &visitor) const -> void override
+  auto accept(VisitorExpr<void> &visitor) const -> void override
   {
     visitor.visitTernaryExpr(*this);
   }
 
-  auto accept(Visitor<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitTernaryExpr(*this);
-  }
-
-  template <typename R> auto accept(Visitor<R> &visitor) const -> R
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
   {
     return visitor.visitTernaryExpr(*this);
   }

@@ -4,7 +4,7 @@
 #include <initializer_list>
 #include <string>
 
-class AstPrinter : public Visitor<void>
+class AstPrinter : public VisitorExpr<void>
 {
 public:
   auto print(const Expr &expr) -> std::string;

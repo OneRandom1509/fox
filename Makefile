@@ -44,22 +44,42 @@ build:
 	@$(CMAKE) --build $(BUILD_DIR)
 	@echo -e "\033[32m✔ Release build complete\033[0m"
 
+# ============================================================
+# Debug Build
+# ============================================================
+
+debug:
+	@echo -e "$(COLOR_YELLOW)▶ Configuring Debug Build...$(COLOR_RESET)"
+	@$(CMAKE) -S . -B $(BUILD_DBG_DIR) -DCMAKE_BUILD_TYPE=Debug $(EXTRA_CMAKE_FLAGS)
+	@echo -e "$(COLOR_YELLOW)▶ Building Debug Binary...$(COLOR_RESET)"
+	@$(CMAKE) --build $(BUILD_DBG_DIR)
+	@echo -e "$(COLOR_GREEN)✔ Debug build complete: $(BUILD_DBG_DIR)/$(FOX_BINARY)$(COLOR_RESET)"
+
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) $(BUILD_DBG_DIR)
+	rm -f $(AST_GEN)
 
 # ============================================================
 # AST Generator
 # ============================================================
 
 AST_GEN := tools/generate_ast
-AST_OUTPUT := include/Expr.hpp
+AST_OUTPUT_EXPR := include/Expr.hpp
+AST_OUTPUT_STMT := include/Stmt.hpp
 
 $(AST_GEN): tools/generate_ast.cpp
 	@echo -e "$(COLOR_BLUE)▶ Building AST generator...$(COLOR_RESET)"
 	@g++ -std=c++20 tools/generate_ast.cpp -o $(AST_GEN)
 
-ast: $(AST_GEN)
-	@echo -e "$(COLOR_BLUE)▶ Generating AST headers...$(COLOR_RESET)"
-	@./$(AST_GEN) include
-	@$(CLANG_FORMAT) -i $(AST_OUTPUT)
-	@echo -e "$(COLOR_GREEN)✔ AST generated and formatted$(COLOR_RESET)"
+ast-expr: $(AST_GEN)
+	@echo -e "$(COLOR_BLUE)▶ Generating Expr AST headers...$(COLOR_RESET)"
+	@./$(AST_GEN) include 0
+	@$(CLANG_FORMAT) -i $(AST_OUTPUT_EXPR)
+	@echo -e "$(COLOR_GREEN)✔ Expr AST generated and formatted$(COLOR_RESET)"
+
+ast-stmt: $(AST_GEN)
+	@echo -e "$(COLOR_BLUE)▶ Generating Stmt AST headers...$(COLOR_RESET)"
+	@./$(AST_GEN) include 1
+	@$(CLANG_FORMAT) -i $(AST_OUTPUT_STMT)
+	@echo -e "$(COLOR_GREEN)✔ Stmt AST generated and formatted$(COLOR_RESET)"
+

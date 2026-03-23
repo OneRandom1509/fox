@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Expr.hpp"
+#include "Stmt.hpp"
 #include "Token.hpp"
 #include <exception>
 #include <memory>
@@ -12,14 +13,14 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// comma < expression < logical < equality < comparison < term < factor <
-/// unary < primary
+/// expression < comma < ternary < logical < equality < comparison < term <
+/// factor < unary < primary
 class Parser
 {
 public:
   Parser(std::vector<Token> tokens);
 
-  auto parse() -> std::unique_ptr<Expr>;
+  auto parse() -> std::vector<std::unique_ptr<Stmt>>;
 
 private:
   std::vector<Token> tokens;
@@ -27,14 +28,23 @@ private:
   class ParseError : public std::exception
   {};
 
-  // comma          → expression ("," comma)* ;
+  // statement      → exprStmt | printStmt ;
+  auto statement() -> std::unique_ptr<Stmt>;
+
+  // printStatement → "print" expression ; ;
+  auto printStatement() -> std::unique_ptr<Stmt>;
+
+  // exprStatement  → expression ; ;
+  auto expressionStatement() -> std::unique_ptr<Stmt>;
+
+  // expression     → comma ;
+  auto expression() -> std::unique_ptr<Expr>;
+
+  // comma          → ternary ("," comma)* ;
   auto comma() -> std::unique_ptr<Expr>;
 
-  // ternary        → expression "?" ternary ":" ternary | expression ;
+  // ternary        → logical "?" ternary ":" ternary | logical ;
   auto ternary() -> std::unique_ptr<Expr>;
-
-  // expression     → logical ;
-  auto expression() -> std::unique_ptr<Expr>;
 
   // logical        → equality ( ( "and" | "or" ) equality )* ;
   auto logical() -> std::unique_ptr<Expr>;

@@ -1,5 +1,6 @@
 #include "Executor.hpp"
 #include "Expr.hpp"
+#include "Stmt.hpp"
 #include "Token.hpp"
 #include <memory>
 #include <utility>
@@ -12,21 +13,55 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// comma < expression < logical < equality < comparison < term < factor <
-/// unary < primary
+/// expression < comma < ternary < logical < equality < comparison < term <
+/// factor < unary < primary
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
 
-auto Parser::parse() -> std::unique_ptr<Expr>
+auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>>
 {
+  std::vector<std::unique_ptr<Stmt>> statements;
   try
     {
-      return comma();
+      while(!isAtEnd())
+        {
+          statements.push_back(statement());
+        }
+
+      return statements;
     }
-  catch(ParseError &error)
+  catch(ParseError &err)
     {
-      return nullptr;
+      return statements;
     }
 }
+
+// statement      → exprStmt | printStmt ;
+auto Parser::statement() -> std::unique_ptr<Stmt>
+{
+  if(match({TokenType::PRINT}))
+    return printStatement();
+
+  return expressionStatement();
+}
+
+// printStatement → "print" expression ; ;
+auto Parser::printStatement() -> std::unique_ptr<Stmt>
+{
+  auto value = expression();
+  consume(TokenType::SEMICOLON, "Expect ; after value.");
+  return std::make_unique<Print>(std::move(value));
+}
+
+// exprStatement  → expression ; ;
+auto Parser::expressionStatement() -> std::unique_ptr<Stmt>
+{
+  auto value = expression();
+  consume(TokenType::SEMICOLON, "Expect ; after value.");
+  return std::make_unique<Expression>(std::move(value));
+}
+
+// expression     → comma ;
+auto Parser::expression() -> std::unique_ptr<Expr> { return comma(); }
 
 // comma          → ternary ("," comma)*
 auto Parser::comma() -> std::unique_ptr<Expr>
@@ -47,14 +82,14 @@ auto Parser::comma() -> std::unique_ptr<Expr>
 }
 
 // TODO: catch only colon operator used error
-// ternary        → expression "?" ternary ":" ternary | expression ;
+// ternary        → logical "?" ternary ":" ternary | logical ;
 auto Parser::ternary() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::QUESTION}))
     {
       throw error(previous(), "Expect condition before QUESTION.");
     }
-  auto expr = expression();
+  auto expr = logical();
 
   if(match({TokenType::QUESTION}))
     {
@@ -73,9 +108,6 @@ auto Parser::ternary() -> std::unique_ptr<Expr>
 
   return expr;
 }
-
-// expression     → logical ;
-auto Parser::expression() -> std::unique_ptr<Expr> { return logical(); }
 
 // logical        → equality ( ( "and" | "or" ) equality )* ;
 auto Parser::logical() -> std::unique_ptr<Expr>

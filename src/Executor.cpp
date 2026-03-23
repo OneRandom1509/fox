@@ -70,15 +70,13 @@ void Executor::run()
   // std::cout << std::endl;
   //
   Parser parser(tokens);
-  auto expression = parser.parse();
+  auto statements = parser.parse();
 
-  // Stop if there's a syntax error;
+  // Stop if there's a syntax error
   if(hadError)
     return;
 
-  interpreter.interpret(*expression);
-  AstPrinter ap;
-  std::cout << ap.print(*expression) << std::endl;
+  interpreter.interpret(statements);
 }
 
 void Executor::error(int line, std::string message)

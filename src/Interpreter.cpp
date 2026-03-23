@@ -6,21 +6,26 @@
 #include <iostream>
 #include <string>
 #include <variant>
+#include <vector>
 
 Interpreter::Interpreter() = default;
 
-void Interpreter::interpret(Expr &expr)
+void Interpreter::interpret(std::vector<std::unique_ptr<Stmt>> &statements)
 {
   try
     {
-      literal_t value = evaluate(expr);
-      std::cout << stringify(value) << std::endl;
+      for(const auto &statement : statements)
+        {
+          execute(*statement);
+        }
     }
   catch(RuntimeError &err)
     {
       Executor::runtimeError(err);
     }
 }
+
+void Interpreter::execute(Stmt &stmt) { stmt.accept(*this); }
 
 auto Interpreter::stringify(literal_t literal) const -> std::string
 {
@@ -205,4 +210,17 @@ auto Interpreter::visitTernaryExpr(const Ternary &expr) -> literal_t
     return evaluate(*expr.left);
 
   return evaluate(*expr.right);
+}
+
+void Interpreter::visitExpressionStmt(const Expression &stmt)
+{
+  evaluate(*stmt.expression);
+  return;
+}
+
+void Interpreter::visitPrintStmt(const Print &stmt)
+{
+  literal_t value = evaluate(*stmt.expression);
+  std::cout << stringify(value) << std::endl;
+  return;
 }

@@ -60,7 +60,7 @@ void Executor::runPrompt()
 
 void Executor::run()
 {
-  Scanner scanner(*this);
+  Scanner scanner(this->source);
   std::vector<Token> tokens = scanner.scanTokens();
 
   // for(auto token : tokens)

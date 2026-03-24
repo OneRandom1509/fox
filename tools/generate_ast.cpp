@@ -157,22 +157,22 @@ auto main(int argc, char *argv[]) -> int
   std::string outputDir = argv[1];
 
   std::vector<TypeDef> exprTypes
-    = {{"Assign", "Token name, std::unique_ptr<Expr> value"},
-       {"Binary", "std::unique_ptr<Expr> left, Token operator_, "
-                  "std::unique_ptr<Expr> right"},
-       {"Grouping", "std::unique_ptr<Expr> expression"},
+    = {{"Assign", "Token name, std::shared_ptr<Expr> value"},
+       {"Binary", "std::shared_ptr<Expr> left, Token operator_, "
+                  "std::shared_ptr<Expr> right"},
+       {"Grouping", "std::shared_ptr<Expr> expression"},
        {"Literal", "literal_t value"},
-       {"Unary", "Token operator_, std::unique_ptr<Expr> right"},
-       {"Comma", "std::unique_ptr<Expr> left, std::unique_ptr<Expr> right"},
-       {"Ternary", "std::unique_ptr<Expr> condition, std::unique_ptr<Expr> "
-                   "left, std::unique_ptr<Expr> right"},
+       {"Unary", "Token operator_, std::shared_ptr<Expr> right"},
+       {"Comma", "std::shared_ptr<Expr> left, std::shared_ptr<Expr> right"},
+       {"Ternary", "std::shared_ptr<Expr> condition, std::shared_ptr<Expr> "
+                   "left, std::shared_ptr<Expr> right"},
        {"Variable", "Token name"}};
 
   std::vector<TypeDef> stmtTypes
-    = {{"Block", "std::vector<std::unique_ptr<Stmt>> statements"},
-       {"Expression", "std::unique_ptr<Expr> expression"},
-       {"Print", "std::unique_ptr<Expr> expression"},
-       {"Var", "Token name, std::unique_ptr<Expr> initializer"}};
+    = {{"Block", "std::vector<std::shared_ptr<Stmt>> statements"},
+       {"Expression", "std::shared_ptr<Expr> expression"},
+       {"Print", "std::shared_ptr<Expr> expression"},
+       {"Var", "Token name, std::shared_ptr<Expr> initializer"}};
 
   if(strcmp(argv[2], "0") == 0)
     {

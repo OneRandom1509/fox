@@ -52,7 +52,7 @@ enum class TokenType
   SUPER,
   THIS,
   TRUE,
-  VAR,
+  LET,
   WHILE,
 
   EOF_TOK,

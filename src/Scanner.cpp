@@ -15,7 +15,7 @@ const std::unordered_map<std::string, TokenType> Scanner::keywords
      {"or", TokenType::OR},         {"print", TokenType::PRINT},
      {"return", TokenType::RETURN}, {"super", TokenType::SUPER},
      {"this", TokenType::THIS},     {"true", TokenType::TRUE},
-     {"var", TokenType::VAR},       {"while", TokenType::WHILE}};
+     {"let", TokenType::LET},       {"while", TokenType::WHILE}};
 
 Scanner::Scanner(Executor &executor)
     : source(std::move(executor.source)), executor(executor)

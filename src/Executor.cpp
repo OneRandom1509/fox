@@ -48,7 +48,7 @@ void Executor::runPrompt()
         }
       else
         {
-          source = std::move(buf);
+          source = buf;
           run();
           // removing the hadError flag to not kill the interactive session
           hadError = false;

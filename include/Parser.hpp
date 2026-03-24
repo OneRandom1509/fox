@@ -13,14 +13,14 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// statement < expression < comma < ternary < logical < equality < comparison
-/// < term < factor < unary < primary
+/// statement < expression < assignment <  comma < ternary < logical < equality
+/// < comparison < term < factor < unary < primary
 class Parser
 {
 public:
   Parser(std::vector<Token> tokens);
 
-  auto parse() -> std::vector<std::unique_ptr<Stmt>>;
+  auto parse() -> std::vector<std::shared_ptr<Stmt>>;
 
 private:
   std::vector<Token> tokens;
@@ -28,46 +28,58 @@ private:
   class ParseError : public std::exception
   {};
 
+  /// declaration    → varDecl | statement ;
+  auto declaration() -> std::shared_ptr<Stmt>;
+
+  /// varDecl        → "let" IDENTIFIER ( "=" expression )? ";" ;
+  auto varDeclaration() -> std::shared_ptr<Stmt>;
+
   /// statement      → exprStmt | printStmt ;
-  auto statement() -> std::unique_ptr<Stmt>;
+  auto statement() -> std::shared_ptr<Stmt>;
+
+  /// block          → "{" declaration* "}" ;
+  auto block() -> std::vector<std::shared_ptr<Stmt>>;
 
   /// printStatement → "print" expression ; ;
-  auto printStatement() -> std::unique_ptr<Stmt>;
+  auto printStatement() -> std::shared_ptr<Stmt>;
 
   /// exprStatement  → expression ; ;
-  auto expressionStatement() -> std::unique_ptr<Stmt>;
+  auto expressionStatement() -> std::shared_ptr<Stmt>;
 
-  /// expression     → comma ;
-  auto expression() -> std::unique_ptr<Expr>;
+  /// expression     → assignment ;
+  auto expression() -> std::shared_ptr<Expr>;
+
+  /// assignment     → IDENTIFIER "=" assignment | comma ;
+  auto assignment() -> std::shared_ptr<Expr>;
 
   /// comma          → ternary ("," comma)* ;
-  auto comma() -> std::unique_ptr<Expr>;
+  auto comma() -> std::shared_ptr<Expr>;
 
   /// ternary        → logical "?" ternary ":" ternary | logical ;
-  auto ternary() -> std::unique_ptr<Expr>;
+  auto ternary() -> std::shared_ptr<Expr>;
 
   /// logical        → equality ( ( "and" | "or" ) equality )* ;
-  auto logical() -> std::unique_ptr<Expr>;
+  auto logical() -> std::shared_ptr<Expr>;
 
   /// equality       → comparison ( ( "!=" | "==" ) comparison )* ;
-  auto equality() -> std::unique_ptr<Expr>;
+  auto equality() -> std::shared_ptr<Expr>;
 
   /// comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-  auto comparison() -> std::unique_ptr<Expr>;
+  auto comparison() -> std::shared_ptr<Expr>;
 
   /// term           → factor ( ( "-" | "+" ) factor )* ;
-  auto term() -> std::unique_ptr<Expr>;
+  auto term() -> std::shared_ptr<Expr>;
 
   /// factor         → unary ( ( "/" | "*" ) unary )* ;
-  auto factor() -> std::unique_ptr<Expr>;
+  auto factor() -> std::shared_ptr<Expr>;
 
   /// unary          → ( "!" | "-" ) unary
   //                | primary ;
-  auto unary() -> std::unique_ptr<Expr>;
+  auto unary() -> std::shared_ptr<Expr>;
 
   /// primary        → NUMBER | STRING | "true" | "false" | "nil"
-  ///                | "(" expression ")" ;
-  auto primary() -> std::unique_ptr<Expr>;
+  ///                | "(" expression ")" | IDENTIFIER ;
+  auto primary() -> std::shared_ptr<Expr>;
 
   void synchronize();
 

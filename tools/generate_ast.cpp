@@ -115,6 +115,7 @@ void defineAst(const std::string &outputDir, const std::string &baseName,
   if(baseName == "Stmt")
     {
       writer << "#include \"Expr.hpp\"\n";
+      writer << "#include <vector>\n";
     }
   writer << "\n";
 
@@ -156,18 +157,22 @@ auto main(int argc, char *argv[]) -> int
   std::string outputDir = argv[1];
 
   std::vector<TypeDef> exprTypes
-    = {{"Binary", "std::unique_ptr<Expr> left, Token operator_, "
+    = {{"Assign", "Token name, std::unique_ptr<Expr> value"},
+       {"Binary", "std::unique_ptr<Expr> left, Token operator_, "
                   "std::unique_ptr<Expr> right"},
        {"Grouping", "std::unique_ptr<Expr> expression"},
        {"Literal", "literal_t value"},
        {"Unary", "Token operator_, std::unique_ptr<Expr> right"},
        {"Comma", "std::unique_ptr<Expr> left, std::unique_ptr<Expr> right"},
        {"Ternary", "std::unique_ptr<Expr> condition, std::unique_ptr<Expr> "
-                   "left, std::unique_ptr<Expr> right"}};
+                   "left, std::unique_ptr<Expr> right"},
+       {"Variable", "Token name"}};
 
   std::vector<TypeDef> stmtTypes
-    = {{"Expression", "std::unique_ptr<Expr> expression"},
-       {"Print", "std::unique_ptr<Expr> expression"}};
+    = {{"Block", "std::vector<std::unique_ptr<Stmt>> statements"},
+       {"Expression", "std::unique_ptr<Expr> expression"},
+       {"Print", "std::unique_ptr<Expr> expression"},
+       {"Var", "Token name, std::unique_ptr<Expr> initializer"}};
 
   if(strcmp(argv[2], "0") == 0)
     {

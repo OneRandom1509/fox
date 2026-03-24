@@ -4,22 +4,26 @@
 #include <utility>
 #include "Token.hpp"
 
+class Assign;
 class Binary;
 class Grouping;
 class Literal;
 class Unary;
 class Comma;
 class Ternary;
+class Variable;
 
 template <typename R> class VisitorExpr
 {
 public:
+  virtual auto visitAssignExpr(const class Assign &expr) -> R = 0;
   virtual auto visitBinaryExpr(const class Binary &expr) -> R = 0;
   virtual auto visitGroupingExpr(const class Grouping &expr) -> R = 0;
   virtual auto visitLiteralExpr(const class Literal &expr) -> R = 0;
   virtual auto visitUnaryExpr(const class Unary &expr) -> R = 0;
   virtual auto visitCommaExpr(const class Comma &expr) -> R = 0;
   virtual auto visitTernaryExpr(const class Ternary &expr) -> R = 0;
+  virtual auto visitVariableExpr(const class Variable &expr) -> R = 0;
   virtual ~VisitorExpr() = default;
 };
 
@@ -31,11 +35,32 @@ public:
   virtual auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t = 0;
 };
 
+class Assign : public Expr
+{
+public:
+  Assign(Token name, std::shared_ptr<Expr> value)
+      : name(std::move(name)), value(std::move(value))
+  {}
+
+  auto accept(VisitorExpr<void> &visitor) const -> void override
+  {
+    visitor.visitAssignExpr(*this);
+  }
+
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitAssignExpr(*this);
+  }
+
+  const Token name;
+  const std::shared_ptr<Expr> value;
+};
+
 class Binary : public Expr
 {
 public:
-  Binary(std::unique_ptr<Expr> left, Token operator_,
-         std::unique_ptr<Expr> right)
+  Binary(std::shared_ptr<Expr> left, Token operator_,
+         std::shared_ptr<Expr> right)
       : left(std::move(left)), operator_(std::move(operator_)),
         right(std::move(right))
   {}
@@ -50,15 +75,15 @@ public:
     return visitor.visitBinaryExpr(*this);
   }
 
-  const std::unique_ptr<Expr> left;
+  const std::shared_ptr<Expr> left;
   const Token operator_;
-  const std::unique_ptr<Expr> right;
+  const std::shared_ptr<Expr> right;
 };
 
 class Grouping : public Expr
 {
 public:
-  Grouping(std::unique_ptr<Expr> expression)
+  Grouping(std::shared_ptr<Expr> expression)
       : expression(std::move(expression))
   {}
 
@@ -72,7 +97,7 @@ public:
     return visitor.visitGroupingExpr(*this);
   }
 
-  const std::unique_ptr<Expr> expression;
+  const std::shared_ptr<Expr> expression;
 };
 
 class Literal : public Expr
@@ -96,7 +121,7 @@ public:
 class Unary : public Expr
 {
 public:
-  Unary(Token operator_, std::unique_ptr<Expr> right)
+  Unary(Token operator_, std::shared_ptr<Expr> right)
       : operator_(std::move(operator_)), right(std::move(right))
   {}
 
@@ -111,13 +136,13 @@ public:
   }
 
   const Token operator_;
-  const std::unique_ptr<Expr> right;
+  const std::shared_ptr<Expr> right;
 };
 
 class Comma : public Expr
 {
 public:
-  Comma(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right)
+  Comma(std::shared_ptr<Expr> left, std::shared_ptr<Expr> right)
       : left(std::move(left)), right(std::move(right))
   {}
 
@@ -131,15 +156,15 @@ public:
     return visitor.visitCommaExpr(*this);
   }
 
-  const std::unique_ptr<Expr> left;
-  const std::unique_ptr<Expr> right;
+  const std::shared_ptr<Expr> left;
+  const std::shared_ptr<Expr> right;
 };
 
 class Ternary : public Expr
 {
 public:
-  Ternary(std::unique_ptr<Expr> condition, std::unique_ptr<Expr> left,
-          std::unique_ptr<Expr> right)
+  Ternary(std::shared_ptr<Expr> condition, std::shared_ptr<Expr> left,
+          std::shared_ptr<Expr> right)
       : condition(std::move(condition)), left(std::move(left)),
         right(std::move(right))
   {}
@@ -154,7 +179,25 @@ public:
     return visitor.visitTernaryExpr(*this);
   }
 
-  const std::unique_ptr<Expr> condition;
-  const std::unique_ptr<Expr> left;
-  const std::unique_ptr<Expr> right;
+  const std::shared_ptr<Expr> condition;
+  const std::shared_ptr<Expr> left;
+  const std::shared_ptr<Expr> right;
+};
+
+class Variable : public Expr
+{
+public:
+  Variable(Token name) : name(std::move(name)) {}
+
+  auto accept(VisitorExpr<void> &visitor) const -> void override
+  {
+    visitor.visitVariableExpr(*this);
+  }
+
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitVariableExpr(*this);
+  }
+
+  const Token name;
 };

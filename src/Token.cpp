@@ -58,7 +58,7 @@ auto tokenTypeString(TokenType type) -> std::string
     case TokenType::SUPER: return "SUPER";
     case TokenType::THIS: return "THIS";
     case TokenType::TRUE: return "TRUE";
-    case TokenType::VAR: return "VAR";
+    case TokenType::LET: return "LET";
     case TokenType::WHILE: return "WHILE";
 
     case TokenType::EOF_TOK: return "EOF_TOK";

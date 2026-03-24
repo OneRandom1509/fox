@@ -7,10 +7,11 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include "Environment.hpp"
 
 Interpreter::Interpreter() = default;
 
-void Interpreter::interpret(std::vector<std::unique_ptr<Stmt>> &statements)
+void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> &statements)
 {
   try
     {
@@ -212,6 +213,18 @@ auto Interpreter::visitTernaryExpr(const Ternary &expr) -> literal_t
   return evaluate(*expr.right);
 }
 
+auto Interpreter::visitVariableExpr(const Variable &expr) -> literal_t
+{
+  return environment.get(expr.name);
+}
+
+auto Interpreter::visitAssignExpr(const Assign &expr) -> literal_t
+{
+  literal_t value = evaluate(*expr.value);
+  environment.assign(expr.name, value);
+  return value;
+}
+
 void Interpreter::visitExpressionStmt(const Expression &stmt)
 {
   evaluate(*stmt.expression);
@@ -223,4 +236,44 @@ void Interpreter::visitPrintStmt(const Print &stmt)
   literal_t value = evaluate(*stmt.expression);
   std::cout << stringify(value) << std::endl;
   return;
+}
+
+void Interpreter::visitVarStmt(const Var &stmt)
+{
+  literal_t value = std::monostate{};
+  if(stmt.initializer != nullptr)
+    {
+      value = evaluate(*stmt.initializer);
+    }
+
+  environment.define(stmt.name.lexeme, value);
+  return;
+}
+
+void Interpreter::visitBlockStmt(const Block &stmt)
+{
+  executeBlock(stmt.statements, std::make_shared<Environment>(environment));
+  return;
+}
+
+void Interpreter::executeBlock(
+  const std::vector<std::shared_ptr<Stmt>> &statements,
+  std::shared_ptr<Environment> environment)
+{
+  auto previous = std::move(this->environment);
+  try
+    {
+      this->environment = environment;
+
+      for(const auto &statement : statements)
+        {
+          execute(*statement);
+        }
+      this->environment = previous;
+    }
+  catch(...)
+    {
+      this->environment = previous;
+      throw;
+    }
 }

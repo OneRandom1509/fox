@@ -4,15 +4,20 @@
 #include <utility>
 #include "Token.hpp"
 #include "Expr.hpp"
+#include <vector>
 
+class Block;
 class Expression;
 class Print;
+class Var;
 
 template <typename R> class VisitorStmt
 {
 public:
+  virtual auto visitBlockStmt(const class Block &expr) -> R = 0;
   virtual auto visitExpressionStmt(const class Expression &expr) -> R = 0;
   virtual auto visitPrintStmt(const class Print &expr) -> R = 0;
+  virtual auto visitVarStmt(const class Var &expr) -> R = 0;
   virtual ~VisitorStmt() = default;
 };
 
@@ -24,10 +29,30 @@ public:
   virtual auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t = 0;
 };
 
+class Block : public Stmt
+{
+public:
+  Block(std::vector<std::shared_ptr<Stmt>> statements)
+      : statements(std::move(statements))
+  {}
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitBlockStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitBlockStmt(*this);
+  }
+
+  const std::vector<std::shared_ptr<Stmt>> statements;
+};
+
 class Expression : public Stmt
 {
 public:
-  Expression(std::unique_ptr<Expr> expression)
+  Expression(std::shared_ptr<Expr> expression)
       : expression(std::move(expression))
   {}
 
@@ -41,13 +66,13 @@ public:
     return visitor.visitExpressionStmt(*this);
   }
 
-  const std::unique_ptr<Expr> expression;
+  const std::shared_ptr<Expr> expression;
 };
 
 class Print : public Stmt
 {
 public:
-  Print(std::unique_ptr<Expr> expression) : expression(std::move(expression))
+  Print(std::shared_ptr<Expr> expression) : expression(std::move(expression))
   {}
 
   auto accept(VisitorStmt<void> &visitor) const -> void override
@@ -60,5 +85,26 @@ public:
     return visitor.visitPrintStmt(*this);
   }
 
-  const std::unique_ptr<Expr> expression;
+  const std::shared_ptr<Expr> expression;
+};
+
+class Var : public Stmt
+{
+public:
+  Var(Token name, std::shared_ptr<Expr> initializer)
+      : name(std::move(name)), initializer(std::move(initializer))
+  {}
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitVarStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitVarStmt(*this);
+  }
+
+  const Token name;
+  const std::shared_ptr<Expr> initializer;
 };

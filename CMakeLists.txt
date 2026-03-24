@@ -35,6 +35,7 @@ set(FOX_SOURCES
     src/Parser.cpp
     src/RuntimeError.cpp
     src/Interpreter.cpp
+    src/Environment.cpp
 )
 
 # ------------------------------------------------

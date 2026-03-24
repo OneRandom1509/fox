@@ -1,6 +1,5 @@
 #include "Executor.hpp"
 #include <ios>
-#include "AstPrinter.hpp"
 #include "Constants.hpp"
 #include <iostream>
 #include <sysexits.h>
@@ -15,10 +14,13 @@
 std::string Executor::source = "";
 bool Executor::hadError = false;
 bool Executor::hadRuntimeError = false;
+bool Executor::repl = false;
+
 Interpreter Executor::interpreter = Interpreter();
 
 void Executor::runFile(std::string path)
 {
+  repl = false;
   std::stringstream ss;
 
   {
@@ -39,6 +41,7 @@ void Executor::runPrompt()
   std::string buf;
   while(true)
     {
+      repl = true;
       std::cout << "fox> ";
       std::getline(std::cin, buf);
       if(buf == "exit()")

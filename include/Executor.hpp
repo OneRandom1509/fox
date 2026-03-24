@@ -9,6 +9,7 @@ class Executor
 {
 public:
   static std::string source;
+  static bool repl;
 
   void runFile(std::string path);
   void runPrompt();

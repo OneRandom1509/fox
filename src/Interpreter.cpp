@@ -227,7 +227,10 @@ auto Interpreter::visitAssignExpr(const Assign &expr) -> literal_t
 
 void Interpreter::visitExpressionStmt(const Expression &stmt)
 {
-  evaluate(*stmt.expression);
+  auto value = evaluate(*stmt.expression);
+  // if it's in REPL mode, output the expression's value directly
+  if(Executor::repl)
+    std::cout << stringify(value) << std::endl;
   return;
 }
 

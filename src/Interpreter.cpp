@@ -221,7 +221,8 @@ auto Interpreter::visitVariableExpr(const Variable &expr) -> literal_t
 auto Interpreter::visitAssignExpr(const Assign &expr) -> literal_t
 {
   literal_t value = evaluate(*expr.value);
-  environment.assign(expr.name, value);
+  // true is passed as it is obvious that the variable is (being) initialized
+  environment.assign(expr.name, {true, value});
   return value;
 }
 
@@ -244,12 +245,14 @@ void Interpreter::visitPrintStmt(const Print &stmt)
 void Interpreter::visitVarStmt(const Var &stmt)
 {
   literal_t value = std::monostate{};
+  bool initialized = false;
   if(stmt.initializer != nullptr)
     {
+      initialized = true;
       value = evaluate(*stmt.initializer);
     }
 
-  environment.define(stmt.name.lexeme, value);
+  environment.define(stmt.name.lexeme, {initialized, value});
   return;
 }
 

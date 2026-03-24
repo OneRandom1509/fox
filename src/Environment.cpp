@@ -1,5 +1,6 @@
 #include "Environment.hpp"
 #include "RuntimeError.hpp"
+#include <utility>
 
 Environment::Environment() { enclosing = nullptr; };
 
@@ -12,7 +13,11 @@ auto Environment::get(Token name) const -> literal_t
   auto it = values.find(name.lexeme);
   if(it != values.end())
     {
-      return it->second;
+      // Checking if the variable is uninitialized
+      if(!it->second.first)
+        throw RuntimeError(name,
+                           "Unintialized variable '" + name.lexeme + "'.");
+      return it->second.second;
     }
   if(enclosing != nullptr)
     return enclosing->get(name);
@@ -20,12 +25,12 @@ auto Environment::get(Token name) const -> literal_t
   throw RuntimeError{name, "Undefined variable '" + name.lexeme + "'."};
 }
 
-void Environment::define(std::string name, literal_t value)
+void Environment::define(std::string name, std::pair<bool, literal_t> value)
 {
   values.insert_or_assign(name, value);
 }
 
-void Environment::assign(Token name, literal_t value)
+void Environment::assign(Token name, std::pair<bool, literal_t> value)
 {
   if(values.contains(name.lexeme))
     {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Executor.hpp"
 #include "Token.hpp"
 #include <unordered_map>
 #include <vector>
@@ -8,7 +7,7 @@
 class Scanner
 {
 public:
-  Scanner(Executor &executor);
+  Scanner(std::string source);
   auto scanTokens() -> std::vector<Token>;
 
 private:
@@ -17,7 +16,6 @@ private:
   size_t start = 0;
   size_t current = 0;
   int line = 1;
-  Executor &executor;
   static const std::unordered_map<std::string, TokenType> keywords;
 
   inline auto isAtEnd() -> bool;

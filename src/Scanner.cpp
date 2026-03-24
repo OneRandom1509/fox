@@ -17,9 +17,7 @@ const std::unordered_map<std::string, TokenType> Scanner::keywords
      {"this", TokenType::THIS},     {"true", TokenType::TRUE},
      {"let", TokenType::LET},       {"while", TokenType::WHILE}};
 
-Scanner::Scanner(Executor &executor)
-    : source(std::move(executor.source)), executor(executor)
-{}
+Scanner::Scanner(std::string source) : source(std::move(source)) {}
 
 auto Scanner::scanTokens() -> std::vector<Token>
 {
@@ -85,7 +83,7 @@ void Scanner::scanToken()
 
           if(isAtEnd())
             {
-              executor.error(line, "Unterminated block comment.");
+              Executor::error(line, "Unterminated block comment.");
               break;
             }
 
@@ -120,7 +118,7 @@ void Scanner::scanToken()
         }
       else
         {
-          executor.error(line, "Unexpected character.");
+          Executor::error(line, "Unexpected character.");
           break;
         }
     }
@@ -166,7 +164,7 @@ void Scanner::string()
 
   if(isAtEnd())
     {
-      executor.error(line, "Unterminated string.");
+      Executor::error(line, "Unterminated string.");
       return;
     }
 

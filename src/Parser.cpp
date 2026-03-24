@@ -7,7 +7,7 @@
 #include <vector>
 #include "Parser.hpp"
 
-Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
+Parser::Parser(std::vector<Token> tokens) : tokens(std::move((tokens))) {}
 
 auto Parser::parse() -> std::vector<std::shared_ptr<Stmt>>
 {
@@ -47,7 +47,7 @@ auto Parser::varDeclaration() -> std::shared_ptr<Stmt>
     }
 
   consume(TokenType::SEMICOLON, "Expect ; after value.");
-  return std::make_shared<Var>(name, std::move(initializer));
+  return std::make_shared<Var>(name, initializer);
 }
 
 auto Parser::statement() -> std::shared_ptr<Stmt>
@@ -77,14 +77,14 @@ auto Parser::printStatement() -> std::shared_ptr<Stmt>
 {
   auto value = expression();
   consume(TokenType::SEMICOLON, "Expect ; after value.");
-  return std::make_shared<Print>(std::move(value));
+  return std::make_shared<Print>(value);
 }
 
 auto Parser::expressionStatement() -> std::shared_ptr<Stmt>
 {
   auto value = expression();
   consume(TokenType::SEMICOLON, "Expect ; after value.");
-  return std::make_shared<Expression>(std::move(value));
+  return std::make_shared<Expression>(value);
 }
 
 auto Parser::expression() -> std::shared_ptr<Expr> { return assignment(); }
@@ -103,7 +103,7 @@ auto Parser::assignment() -> std::shared_ptr<Expr>
       if(auto *var = dynamic_cast<Variable *>(expr.get()))
         {
           Token name = var->name;
-          return std::make_shared<Assign>(name, std::move(value));
+          return std::make_shared<Assign>(name, value);
         }
 
       error(equals, "Invalid assignment target.");
@@ -123,7 +123,7 @@ auto Parser::comma() -> std::shared_ptr<Expr>
   while(match({TokenType::COMMA}))
     {
       auto right = comma();
-      expr = std::make_shared<Comma>(std::move(expr), std::move(right));
+      expr = std::make_shared<Comma>(expr, right);
     }
 
   return expr;
@@ -144,8 +144,7 @@ auto Parser::ternary() -> std::shared_ptr<Expr>
       if(match({TokenType::COLON}))
         {
           auto right = ternary();
-          expr = std::make_shared<Ternary>(std::move(expr), std::move(left),
-                                           std::move(right));
+          expr = std::make_shared<Ternary>(expr, left, right);
         }
       else
         {
@@ -170,7 +169,7 @@ auto Parser::logical() -> std::shared_ptr<Expr>
     {
       Token op = previous();
       auto right = equality();
-      expr = std::make_shared<Binary>(std::move(expr), op, std::move(right));
+      expr = std::make_shared<Binary>(expr, op, right);
     }
 
   return expr;
@@ -190,7 +189,7 @@ auto Parser::equality() -> std::shared_ptr<Expr>
     {
       Token op = previous();
       auto right = comparison();
-      expr = std::make_shared<Binary>(std::move(expr), op, std::move(right));
+      expr = std::make_shared<Binary>(expr, op, right);
     }
 
   return expr;
@@ -211,7 +210,7 @@ auto Parser::comparison() -> std::shared_ptr<Expr>
     {
       Token op = previous();
       auto right = term();
-      expr = std::make_shared<Binary>(std::move(expr), op, std::move(right));
+      expr = std::make_shared<Binary>(expr, op, right);
     }
   return expr;
 }
@@ -229,7 +228,7 @@ auto Parser::term() -> std::shared_ptr<Expr>
     {
       Token op = previous();
       auto right = factor();
-      expr = std::make_shared<Binary>(std::move(expr), op, std::move(right));
+      expr = std::make_shared<Binary>(expr, op, right);
     }
 
   return expr;
@@ -248,7 +247,7 @@ auto Parser::factor() -> std::shared_ptr<Expr>
     {
       Token op = previous();
       auto right = unary();
-      expr = std::make_shared<Binary>(std::move(expr), op, std::move(right));
+      expr = std::make_shared<Binary>(expr, op, right);
     }
 
   return expr;
@@ -260,7 +259,7 @@ auto Parser::unary() -> std::shared_ptr<Expr>
     {
       Token op = previous();
       auto right = unary();
-      return std::make_shared<Unary>(op, std::move(right));
+      return std::make_shared<Unary>(op, (right));
     }
 
   return primary();
@@ -276,13 +275,13 @@ auto Parser::primary() -> std::shared_ptr<Expr>
     return std::make_shared<Literal>(std::monostate{});
 
   if(match({TokenType::NUMBER, TokenType::STRING}))
-    return std::make_shared<Literal>(std::move(previous().literal));
+    return std::make_shared<Literal>(previous().literal);
 
   if(match({TokenType::LEFT_PAREN}))
     {
       auto expr = expression();
       consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
-      return std::make_shared<Grouping>(std::move(expr));
+      return std::make_shared<Grouping>(expr);
     }
 
   if(match({TokenType::IDENTIFIER}))

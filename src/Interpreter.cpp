@@ -260,7 +260,7 @@ void Interpreter::executeBlock(
   const std::vector<std::shared_ptr<Stmt>> &statements,
   std::shared_ptr<Environment> environment)
 {
-  auto previous = std::move(this->environment);
+  auto previous = this->environment;
   try
     {
       this->environment = environment;

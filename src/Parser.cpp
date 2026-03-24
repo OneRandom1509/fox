@@ -7,14 +7,6 @@
 #include <vector>
 #include "Parser.hpp"
 
-/// This is the implementation of a recursive descent parser where we move from
-/// the resursively descent from the lowest precedence to the highest
-/// precedence Exprs. That is, each production will only call either itself, or
-/// the production which has higher precedence than it.
-///
-/// The precedence order is:
-/// expression < comma < ternary < logical < equality < comparison < term <
-/// factor < unary < primary
 Parser::Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
 
 auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>>
@@ -35,7 +27,6 @@ auto Parser::parse() -> std::vector<std::unique_ptr<Stmt>>
     }
 }
 
-// statement      → exprStmt | printStmt ;
 auto Parser::statement() -> std::unique_ptr<Stmt>
 {
   if(match({TokenType::PRINT}))
@@ -44,7 +35,6 @@ auto Parser::statement() -> std::unique_ptr<Stmt>
   return expressionStatement();
 }
 
-// printStatement → "print" expression ; ;
 auto Parser::printStatement() -> std::unique_ptr<Stmt>
 {
   auto value = expression();
@@ -52,7 +42,6 @@ auto Parser::printStatement() -> std::unique_ptr<Stmt>
   return std::make_unique<Print>(std::move(value));
 }
 
-// exprStatement  → expression ; ;
 auto Parser::expressionStatement() -> std::unique_ptr<Stmt>
 {
   auto value = expression();
@@ -60,10 +49,8 @@ auto Parser::expressionStatement() -> std::unique_ptr<Stmt>
   return std::make_unique<Expression>(std::move(value));
 }
 
-// expression     → comma ;
 auto Parser::expression() -> std::unique_ptr<Expr> { return comma(); }
 
-// comma          → ternary ("," comma)*
 auto Parser::comma() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::COMMA}))
@@ -82,7 +69,6 @@ auto Parser::comma() -> std::unique_ptr<Expr>
 }
 
 // TODO: catch only colon operator used error
-// ternary        → logical "?" ternary ":" ternary | logical ;
 auto Parser::ternary() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::QUESTION}))
@@ -109,7 +95,6 @@ auto Parser::ternary() -> std::unique_ptr<Expr>
   return expr;
 }
 
-// logical        → equality ( ( "and" | "or" ) equality )* ;
 auto Parser::logical() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::AND, TokenType::OR}))
@@ -130,7 +115,6 @@ auto Parser::logical() -> std::unique_ptr<Expr>
   return expr;
 }
 
-// equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 auto Parser::equality() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL}))
@@ -151,7 +135,6 @@ auto Parser::equality() -> std::unique_ptr<Expr>
   return expr;
 }
 
-// comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 auto Parser::comparison() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::GREATER, TokenType::GREATER_EQUAL, TokenType::LESSER,
@@ -172,7 +155,6 @@ auto Parser::comparison() -> std::unique_ptr<Expr>
   return expr;
 }
 
-// term           → factor ( ( "-" | "+" ) factor )* ;
 auto Parser::term() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::PLUS}))
@@ -192,7 +174,6 @@ auto Parser::term() -> std::unique_ptr<Expr>
   return expr;
 }
 
-// factor         → unary ( ( "/" | "*" ) unary )* ;
 auto Parser::factor() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::SLASH, TokenType::STAR}))
@@ -212,8 +193,6 @@ auto Parser::factor() -> std::unique_ptr<Expr>
   return expr;
 }
 
-// unary          → ( "!" | "-" ) unary
-//                | primary ;
 auto Parser::unary() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::BANG, TokenType::MINUS}))
@@ -226,8 +205,6 @@ auto Parser::unary() -> std::unique_ptr<Expr>
   return primary();
 }
 
-// primary        → NUMBER | STRING | "true" | "false" | "nil"
-//                | "(" expression ")" ;
 auto Parser::primary() -> std::unique_ptr<Expr>
 {
   if(match({TokenType::FALSE}))

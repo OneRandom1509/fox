@@ -13,8 +13,8 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// statement < expression < assignment <  comma < ternary < logical < equality
-/// < comparison < term < factor < unary < primary
+/// statement < expression < assignment <  comma < ternary < logical_or <
+/// logical_and < equality < comparison < term < factor < unary < primary
 class Parser
 {
 public:
@@ -34,7 +34,8 @@ private:
   /// varDecl        → "let" IDENTIFIER ( "=" expression )? ";" ;
   auto varDeclaration() -> std::shared_ptr<Stmt>;
 
-  /// statement      → exprStmt | printStmt ;
+  /// statement      → exprStmt | printStmt | blockStmt | ifStmt | whileStmt |
+  ///                  forStmt ;
   auto statement() -> std::shared_ptr<Stmt>;
 
   /// block          → "{" declaration* "}" ;
@@ -52,6 +53,11 @@ private:
 
   /// whileStmt      → "while" "(" expression ")" statement ;
   auto whileStatement() -> std::shared_ptr<Stmt>;
+
+  /// forStmt        → "for" "(" ( varDecl | exprStmt | ";" )
+  ///                  expression? ";"
+  ///                  expression? ")" statement ;
+  auto forStatement() -> std::shared_ptr<Stmt>;
 
   /// expression     → assignment ;
   auto expression() -> std::shared_ptr<Expr>;

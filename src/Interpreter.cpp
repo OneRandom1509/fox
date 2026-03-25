@@ -291,6 +291,15 @@ void Interpreter::visitIfStmt(const If &stmt)
   return;
 }
 
+void Interpreter::visitWhileStmt(const While &stmt)
+{
+  while(isTruthy(evaluate(*stmt.condition)))
+    {
+      execute(*stmt.body);
+    }
+  return;
+}
+
 void Interpreter::executeBlock(
   const std::vector<std::shared_ptr<Stmt>> &statements,
   std::shared_ptr<Environment> environment)

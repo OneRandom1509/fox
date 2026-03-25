@@ -50,6 +50,9 @@ private:
   ///                ( "else" statement )? ;
   auto ifStatement() -> std::shared_ptr<Stmt>;
 
+  /// whileStmt      → "while" "(" expression ")" statement ;
+  auto whileStatement() -> std::shared_ptr<Stmt>;
+
   /// expression     → assignment ;
   auto expression() -> std::shared_ptr<Expr>;
 

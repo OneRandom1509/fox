@@ -56,6 +56,8 @@ auto Parser::statement() -> std::shared_ptr<Stmt>
     return ifStatement();
   if(match({TokenType::PRINT}))
     return printStatement();
+  if(match({TokenType::WHILE}))
+    return whileStatement();
   if(match({TokenType::LEFT_BRACE}))
     return std::make_shared<Block>(block());
 
@@ -106,6 +108,15 @@ auto Parser::ifStatement() -> std::shared_ptr<Stmt>
   return std::make_shared<If>(condition, thenBranch, elseBranch);
 }
 
+auto Parser::whileStatement() -> std::shared_ptr<Stmt>
+{
+  consume(TokenType::LEFT_PAREN, "Expect '(' after 'while'.");
+  auto condition = expression();
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after while condition");
+  auto stmt = statement();
+
+  return std::make_shared<While>(condition, stmt);
+}
 auto Parser::expression() -> std::shared_ptr<Expr> { return assignment(); }
 
 auto Parser::assignment() -> std::shared_ptr<Expr>

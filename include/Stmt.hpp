@@ -11,6 +11,7 @@ class Expression;
 class If;
 class Print;
 class Var;
+class While;
 
 template <typename R> class VisitorStmt
 {
@@ -20,6 +21,7 @@ public:
   virtual auto visitIfStmt(const class If &expr) -> R = 0;
   virtual auto visitPrintStmt(const class Print &expr) -> R = 0;
   virtual auto visitVarStmt(const class Var &expr) -> R = 0;
+  virtual auto visitWhileStmt(const class While &expr) -> R = 0;
   virtual ~VisitorStmt() = default;
 };
 
@@ -133,4 +135,25 @@ public:
 
   const Token name;
   const std::shared_ptr<Expr> initializer;
+};
+
+class While : public Stmt
+{
+public:
+  While(std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body)
+      : condition(std::move(condition)), body(std::move(body))
+  {}
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitWhileStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitWhileStmt(*this);
+  }
+
+  const std::shared_ptr<Expr> condition;
+  const std::shared_ptr<Stmt> body;
 };

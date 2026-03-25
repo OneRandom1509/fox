@@ -262,6 +262,20 @@ void Interpreter::visitBlockStmt(const Block &stmt)
   return;
 }
 
+void Interpreter::visitIfStmt(const If &stmt)
+{
+  if(isTruthy(evaluate(*stmt.condition)))
+    {
+      execute(*stmt.thenBranch);
+    }
+  else if(stmt.elseBranch != nullptr)
+    {
+      execute(*stmt.elseBranch);
+    }
+
+  return;
+}
+
 void Interpreter::executeBlock(
   const std::vector<std::shared_ptr<Stmt>> &statements,
   std::shared_ptr<Environment> environment)

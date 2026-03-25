@@ -52,6 +52,8 @@ auto Parser::varDeclaration() -> std::shared_ptr<Stmt>
 
 auto Parser::statement() -> std::shared_ptr<Stmt>
 {
+  if(match({TokenType::IF}))
+    return ifStatement();
   if(match({TokenType::PRINT}))
     return printStatement();
   if(match({TokenType::LEFT_BRACE}))
@@ -85,6 +87,23 @@ auto Parser::expressionStatement() -> std::shared_ptr<Stmt>
   auto value = expression();
   consume(TokenType::SEMICOLON, "Expect ; after value.");
   return std::make_shared<Expression>(value);
+}
+
+auto Parser::ifStatement() -> std::shared_ptr<Stmt>
+{
+  consume(TokenType::LEFT_PAREN, "Expect '(' after 'if'.");
+  auto condition = expression();
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
+
+  auto thenBranch = statement();
+  std::shared_ptr<Stmt> elseBranch = nullptr;
+
+  if(match({TokenType::ELSE}))
+    {
+      elseBranch = statement();
+    }
+
+  return std::make_shared<If>(condition, thenBranch, elseBranch);
 }
 
 auto Parser::expression() -> std::shared_ptr<Expr> { return assignment(); }

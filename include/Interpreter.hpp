@@ -15,6 +15,7 @@ public:
   void visitPrintStmt(const Print &stmt) override;
   void visitVarStmt(const Var &stmt) override;
   void visitBlockStmt(const Block &stmt) override;
+  void visitIfStmt(const If &stmt) override;
 
   auto visitLiteralExpr(const Literal &expr) -> literal_t override;
   auto visitGroupingExpr(const Grouping &expr) -> literal_t override;

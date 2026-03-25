@@ -46,6 +46,10 @@ private:
   /// exprStatement  → expression ; ;
   auto expressionStatement() -> std::shared_ptr<Stmt>;
 
+  /// ifStmt         → "if" "(" expression ")" statement
+  ///                ( "else" statement )? ;
+  auto ifStatement() -> std::shared_ptr<Stmt>;
+
   /// expression     → assignment ;
   auto expression() -> std::shared_ptr<Expr>;
 

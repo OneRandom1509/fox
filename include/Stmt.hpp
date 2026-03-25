@@ -8,6 +8,7 @@
 
 class Block;
 class Expression;
+class If;
 class Print;
 class Var;
 
@@ -16,6 +17,7 @@ template <typename R> class VisitorStmt
 public:
   virtual auto visitBlockStmt(const class Block &expr) -> R = 0;
   virtual auto visitExpressionStmt(const class Expression &expr) -> R = 0;
+  virtual auto visitIfStmt(const class If &expr) -> R = 0;
   virtual auto visitPrintStmt(const class Print &expr) -> R = 0;
   virtual auto visitVarStmt(const class Var &expr) -> R = 0;
   virtual ~VisitorStmt() = default;
@@ -67,6 +69,30 @@ public:
   }
 
   const std::shared_ptr<Expr> expression;
+};
+
+class If : public Stmt
+{
+public:
+  If(std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> thenBranch,
+     std::shared_ptr<Stmt> elseBranch)
+      : condition(std::move(condition)), thenBranch(std::move(thenBranch)),
+        elseBranch(std::move(elseBranch))
+  {}
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitIfStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitIfStmt(*this);
+  }
+
+  const std::shared_ptr<Expr> condition;
+  const std::shared_ptr<Stmt> thenBranch;
+  const std::shared_ptr<Stmt> elseBranch;
 };
 
 class Print : public Stmt

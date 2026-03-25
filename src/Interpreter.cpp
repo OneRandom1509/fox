@@ -128,9 +128,6 @@ auto Interpreter::visitBinaryExpr(const Binary &expr) -> literal_t
     case TokenType::BANG_EQUAL: return !isEqual(left, right);
     case TokenType::EQUAL_EQUAL: return isEqual(left, right);
 
-    case TokenType::AND: return isTruthy(left) && isTruthy(right);
-    case TokenType::OR: return isTruthy(left) || isTruthy(right);
-
     default: break;
     }
 
@@ -224,6 +221,24 @@ auto Interpreter::visitAssignExpr(const Assign &expr) -> literal_t
   // true is passed as it is obvious that the variable is (being) initialized
   environment.assign(expr.name, {true, value});
   return value;
+}
+
+auto Interpreter::visitLogicalExpr(const Logical &expr) -> literal_t
+{
+  literal_t left = evaluate(*expr.left);
+
+  if(expr.operator_.type == TokenType::OR)
+    {
+      if(isTruthy(left))
+        return evaluate(*expr.left);
+    }
+  else
+    {
+      if(!isTruthy(left))
+        evaluate(*expr.left);
+    }
+
+  return evaluate(*expr.right);
 }
 
 void Interpreter::visitExpressionStmt(const Expression &stmt)

@@ -155,7 +155,7 @@ auto Parser::ternary() -> std::shared_ptr<Expr>
     {
       throw error(previous(), "Expect condition before QUESTION.");
     }
-  auto expr = logical();
+  auto expr = logical_or();
 
   if(match({TokenType::QUESTION}))
     {
@@ -174,9 +174,29 @@ auto Parser::ternary() -> std::shared_ptr<Expr>
   return expr;
 }
 
-auto Parser::logical() -> std::shared_ptr<Expr>
+auto Parser::logical_or() -> std::shared_ptr<Expr>
 {
-  if(match({TokenType::AND, TokenType::OR}))
+  if(match({TokenType::OR}))
+    {
+      throw error(previous(), "Expect expression before "
+                                + tokenTypeString(previous().type) + ".");
+    }
+
+  auto expr = logical_and();
+
+  while(match({TokenType::OR}))
+    {
+      Token op = previous();
+      auto right = logical_and();
+      expr = std::make_shared<Logical>(expr, op, right);
+    }
+
+  return expr;
+}
+
+auto Parser::logical_and() -> std::shared_ptr<Expr>
+{
+  if(match({TokenType::AND}))
     {
       throw error(previous(), "Expect expression before "
                                 + tokenTypeString(previous().type) + ".");
@@ -184,11 +204,11 @@ auto Parser::logical() -> std::shared_ptr<Expr>
 
   auto expr = equality();
 
-  while(match({TokenType::AND, TokenType::OR}))
+  while(match({TokenType::AND}))
     {
       Token op = previous();
       auto right = equality();
-      expr = std::make_shared<Binary>(expr, op, right);
+      expr = std::make_shared<Logical>(expr, op, right);
     }
 
   return expr;

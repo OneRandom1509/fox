@@ -21,6 +21,7 @@ public:
   auto visitGroupingExpr(const Grouping &expr) -> literal_t override;
   auto visitUnaryExpr(const Unary &expr) -> literal_t override;
   auto visitBinaryExpr(const Binary &expr) -> literal_t override;
+  auto visitLogicalExpr(const Logical &expr) -> literal_t override;
   auto visitCommaExpr(const Comma &expr) -> literal_t override;
   auto visitTernaryExpr(const Ternary &expr) -> literal_t override;
   auto visitVariableExpr(const Variable &expr) -> literal_t override;

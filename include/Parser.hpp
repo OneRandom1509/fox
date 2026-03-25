@@ -59,11 +59,14 @@ private:
   /// comma          → ternary ("," comma)* ;
   auto comma() -> std::shared_ptr<Expr>;
 
-  /// ternary        → logical "?" ternary ":" ternary | logical ;
+  /// ternary        → logical_or "?" ternary ":" ternary | logical_or ;
   auto ternary() -> std::shared_ptr<Expr>;
 
-  /// logical        → equality ( ( "and" | "or" ) equality )* ;
-  auto logical() -> std::shared_ptr<Expr>;
+  /// logical        → logical_and ( ( "and" | "or" ) logical_and )* ;
+  auto logical_or() -> std::shared_ptr<Expr>;
+
+  /// logical        → equality ( "and" equality )* ;
+  auto logical_and() -> std::shared_ptr<Expr>;
 
   /// equality       → comparison ( ( "!=" | "==" ) comparison )* ;
   auto equality() -> std::shared_ptr<Expr>;

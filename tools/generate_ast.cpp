@@ -162,6 +162,8 @@ auto main(int argc, char *argv[]) -> int
                   "std::shared_ptr<Expr> right"},
        {"Grouping", "std::shared_ptr<Expr> expression"},
        {"Literal", "literal_t value"},
+       {"Logical", "std::shared_ptr<Expr> left, Token operator_, "
+                   "std::shared_ptr<Expr> right"},
        {"Unary", "Token operator_, std::shared_ptr<Expr> right"},
        {"Comma", "std::shared_ptr<Expr> left, std::shared_ptr<Expr> right"},
        {"Ternary", "std::shared_ptr<Expr> condition, std::shared_ptr<Expr> "

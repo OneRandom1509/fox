@@ -8,6 +8,7 @@ class Assign;
 class Binary;
 class Grouping;
 class Literal;
+class Logical;
 class Unary;
 class Comma;
 class Ternary;
@@ -20,6 +21,7 @@ public:
   virtual auto visitBinaryExpr(const class Binary &expr) -> R = 0;
   virtual auto visitGroupingExpr(const class Grouping &expr) -> R = 0;
   virtual auto visitLiteralExpr(const class Literal &expr) -> R = 0;
+  virtual auto visitLogicalExpr(const class Logical &expr) -> R = 0;
   virtual auto visitUnaryExpr(const class Unary &expr) -> R = 0;
   virtual auto visitCommaExpr(const class Comma &expr) -> R = 0;
   virtual auto visitTernaryExpr(const class Ternary &expr) -> R = 0;
@@ -116,6 +118,30 @@ public:
   }
 
   const literal_t value;
+};
+
+class Logical : public Expr
+{
+public:
+  Logical(std::shared_ptr<Expr> left, Token operator_,
+          std::shared_ptr<Expr> right)
+      : left(std::move(left)), operator_(std::move(operator_)),
+        right(std::move(right))
+  {}
+
+  auto accept(VisitorExpr<void> &visitor) const -> void override
+  {
+    visitor.visitLogicalExpr(*this);
+  }
+
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitLogicalExpr(*this);
+  }
+
+  const std::shared_ptr<Expr> left;
+  const Token operator_;
+  const std::shared_ptr<Expr> right;
 };
 
 class Unary : public Expr

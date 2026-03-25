@@ -32,7 +32,7 @@ public:
 
 private:
   literal_t result;
-  Environment environment = Environment();
+  std::shared_ptr<Environment> environment = std::make_shared<Environment>();
 
   inline void execute(Stmt &stmt);
   void executeBlock(const std::vector<std::shared_ptr<Stmt>> &statements,

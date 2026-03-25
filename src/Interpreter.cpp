@@ -97,7 +97,7 @@ auto Interpreter::visitBinaryExpr(const Binary &expr) -> literal_t
       return asDouble(left) > asDouble(right);
     case TokenType::GREATER_EQUAL:
       checkNumberOperands(expr.operator_, left, right);
-      return asDouble(left) < asDouble(right);
+      return asDouble(left) >= asDouble(right);
     case TokenType::LESSER:
       checkNumberOperands(expr.operator_, left, right);
       return asDouble(left) < asDouble(right);
@@ -212,14 +212,14 @@ auto Interpreter::visitTernaryExpr(const Ternary &expr) -> literal_t
 
 auto Interpreter::visitVariableExpr(const Variable &expr) -> literal_t
 {
-  return environment.get(expr.name);
+  return environment->get(expr.name);
 }
 
 auto Interpreter::visitAssignExpr(const Assign &expr) -> literal_t
 {
   literal_t value = evaluate(*expr.value);
   // true is passed as it is obvious that the variable is (being) initialized
-  environment.assign(expr.name, {true, value});
+  environment->assign(expr.name, {true, value});
   return value;
 }
 
@@ -230,12 +230,12 @@ auto Interpreter::visitLogicalExpr(const Logical &expr) -> literal_t
   if(expr.operator_.type == TokenType::OR)
     {
       if(isTruthy(left))
-        return evaluate(*expr.left);
+        return left;
     }
   else
     {
       if(!isTruthy(left))
-        evaluate(*expr.left);
+        return left;
     }
 
   return evaluate(*expr.right);
@@ -267,13 +267,14 @@ void Interpreter::visitVarStmt(const Var &stmt)
       value = evaluate(*stmt.initializer);
     }
 
-  environment.define(stmt.name.lexeme, {initialized, value});
+  environment->define(stmt.name.lexeme, {initialized, value});
   return;
 }
 
 void Interpreter::visitBlockStmt(const Block &stmt)
 {
-  executeBlock(stmt.statements, std::make_shared<Environment>(environment));
+  executeBlock(stmt.statements,
+               std::make_shared<Environment>(this->environment));
   return;
 }
 

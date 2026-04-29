@@ -64,8 +64,8 @@ clean:
 # ============================================================
 
 AST_GEN := tools/generate_ast
-AST_OUTPUT_EXPR := include/Expr.hpp
-AST_OUTPUT_STMT := include/Stmt.hpp
+AST_OUTPUT_EXPR := include/ast/Expr.hpp
+AST_OUTPUT_STMT := include/ast/Stmt.hpp
 
 $(AST_GEN): tools/generate_ast.cpp
 	@echo -e "$(COLOR_BLUE)▶ Building AST generator...$(COLOR_RESET)"
@@ -73,13 +73,13 @@ $(AST_GEN): tools/generate_ast.cpp
 
 ast-expr: $(AST_GEN)
 	@echo -e "$(COLOR_BLUE)▶ Generating Expr AST headers...$(COLOR_RESET)"
-	@./$(AST_GEN) include 0
+	@./$(AST_GEN) include/ast 0
 	@$(CLANG_FORMAT) -i $(AST_OUTPUT_EXPR)
 	@echo -e "$(COLOR_GREEN)✔ Expr AST generated and formatted$(COLOR_RESET)"
 
 ast-stmt: $(AST_GEN)
 	@echo -e "$(COLOR_BLUE)▶ Generating Stmt AST headers...$(COLOR_RESET)"
-	@./$(AST_GEN) include 1
+	@./$(AST_GEN) include/ast 1
 	@$(CLANG_FORMAT) -i $(AST_OUTPUT_STMT)
 	@echo -e "$(COLOR_GREEN)✔ Stmt AST generated and formatted$(COLOR_RESET)"
 

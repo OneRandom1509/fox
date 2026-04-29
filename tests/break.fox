@@ -1,0 +1,33 @@
+let i = 1;
+
+while(i<10) {
+  print i;
+  if(i == 5){
+    break;
+  }
+  i = i+1;
+}
+
+for(let j = 1; j<10; j = j+1) {
+  print j;
+  if(j == 5) {
+    break;
+  }
+}
+
+let a = 0;
+while(true) {
+  let b = 0;
+  while(true) {
+    if(b == 2) {
+      break;
+    }
+    print "b is " + b;
+    b = b+1;
+  }
+  if(a == 2) {
+    break;
+  }
+  print "a is " + a;
+  a = a+1;
+}

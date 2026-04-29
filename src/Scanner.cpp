@@ -8,14 +8,15 @@
 #include <vector>
 
 const std::unordered_map<std::string, TokenType> Scanner::keywords
-  = {{"and", TokenType::AND},       {"class", TokenType::CLASS},
-     {"else", TokenType::ELSE},     {"false", TokenType::FALSE},
-     {"for", TokenType::FOR},       {"fun", TokenType::FUN},
-     {"if", TokenType::IF},         {"nil", TokenType::NIL},
-     {"or", TokenType::OR},         {"print", TokenType::PRINT},
-     {"return", TokenType::RETURN}, {"super", TokenType::SUPER},
-     {"this", TokenType::THIS},     {"true", TokenType::TRUE},
-     {"let", TokenType::LET},       {"while", TokenType::WHILE}};
+  = {{"and", TokenType::AND},     {"class", TokenType::CLASS},
+     {"break", TokenType::BREAK}, {"else", TokenType::ELSE},
+     {"false", TokenType::FALSE}, {"for", TokenType::FOR},
+     {"fun", TokenType::FUN},     {"if", TokenType::IF},
+     {"nil", TokenType::NIL},     {"or", TokenType::OR},
+     {"print", TokenType::PRINT}, {"return", TokenType::RETURN},
+     {"super", TokenType::SUPER}, {"this", TokenType::THIS},
+     {"true", TokenType::TRUE},   {"let", TokenType::LET},
+     {"while", TokenType::WHILE}};
 
 Scanner::Scanner(std::string source) : source(std::move(source)) {}
 

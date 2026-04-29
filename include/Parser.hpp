@@ -13,7 +13,7 @@
 /// the production which has higher precedence than it.
 ///
 /// The precedence order is:
-/// statement < expression < assignment <  comma < ternary < logical_or <
+/// statement < expression < assignment < comma < ternary < logical_or <
 /// logical_and < equality < comparison < term < factor < unary < primary
 class Parser
 {
@@ -25,6 +25,9 @@ public:
 private:
   std::vector<Token> tokens;
   size_t current = 0;
+  bool inLoop = false; // Used to check if the parsed statements are in a loop,
+                       // useful for detecting rogue break statements and
+                       // report them as syntax errors
   class ParseError : public std::exception
   {};
 
@@ -58,6 +61,9 @@ private:
   ///                  expression? ";"
   ///                  expression? ")" statement ;
   auto forStatement() -> std::shared_ptr<Stmt>;
+
+  /// breakStmt      → "break" ;
+  auto breakStatement() -> std::shared_ptr<Stmt>;
 
   /// expression     → assignment ;
   auto expression() -> std::shared_ptr<Expr>;

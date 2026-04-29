@@ -39,6 +39,7 @@ enum class TokenType
 
   // Keyword Tokens
   AND,
+  BREAK,
   CLASS,
   ELSE,
   FALSE,

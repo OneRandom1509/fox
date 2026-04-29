@@ -12,6 +12,7 @@ class If;
 class Print;
 class Var;
 class While;
+class Break;
 
 template <typename R> class VisitorStmt
 {
@@ -22,6 +23,7 @@ public:
   virtual auto visitPrintStmt(const class Print &expr) -> R = 0;
   virtual auto visitVarStmt(const class Var &expr) -> R = 0;
   virtual auto visitWhileStmt(const class While &expr) -> R = 0;
+  virtual auto visitBreakStmt(const class Break &expr) -> R = 0;
   virtual ~VisitorStmt() = default;
 };
 
@@ -156,4 +158,20 @@ public:
 
   const std::shared_ptr<Expr> condition;
   const std::shared_ptr<Stmt> body;
+};
+
+class Break : public Stmt
+{
+public:
+  Break() = default;
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitBreakStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitBreakStmt(*this);
+  }
 };

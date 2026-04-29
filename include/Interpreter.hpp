@@ -17,6 +17,7 @@ public:
   void visitBlockStmt(const Block &stmt) override;
   void visitIfStmt(const If &stmt) override;
   void visitWhileStmt(const While &stmt) override;
+  void visitBreakStmt(const Break &stmt) override;
 
   auto visitLiteralExpr(const Literal &expr) -> literal_t override;
   auto visitGroupingExpr(const Grouping &expr) -> literal_t override;
@@ -32,6 +33,8 @@ public:
 
 private:
   literal_t result;
+  bool breakSignal = false; // This will be used for breaking loops when break
+                            // statement is encountered
   std::shared_ptr<Environment> environment = std::make_shared<Environment>();
 
   inline void execute(Stmt &stmt);

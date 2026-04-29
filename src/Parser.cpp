@@ -60,6 +60,8 @@ auto Parser::statement() -> std::shared_ptr<Stmt>
     return whileStatement();
   if(match({TokenType::FOR}))
     return forStatement();
+  if(match({TokenType::BREAK}))
+    return breakStatement();
   if(match({TokenType::LEFT_BRACE}))
     return std::make_shared<Block>(block());
 
@@ -112,16 +114,33 @@ auto Parser::ifStatement() -> std::shared_ptr<Stmt>
 
 auto Parser::whileStatement() -> std::shared_ptr<Stmt>
 {
+  // Could probably use a guard sorta thing for this topLevel loop detection
+  bool topLevel = false;
+  if(!inLoop)
+    {
+      topLevel = true;
+      inLoop = true;
+    }
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'while'.");
   auto condition = expression();
   consume(TokenType::RIGHT_PAREN, "Expect ')' after while condition.");
   auto stmt = statement();
+  if(topLevel)
+    inLoop = false;
 
   return std::make_shared<While>(condition, stmt);
 }
 
 auto Parser::forStatement() -> std::shared_ptr<Stmt>
 {
+  // Same thing for the topLevel loop detection here as well
+  bool topLevel = false;
+  if(!inLoop)
+    {
+      topLevel = true;
+      inLoop = true;
+    }
+
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
 
   std::shared_ptr<Stmt> initializer;
@@ -144,6 +163,9 @@ auto Parser::forStatement() -> std::shared_ptr<Stmt>
 
   auto body = statement();
 
+  if(topLevel)
+    inLoop = false;
+
   if(increment != nullptr)
     {
       body = std::make_shared<Block>(std::vector<std::shared_ptr<Stmt>>{
@@ -158,6 +180,14 @@ auto Parser::forStatement() -> std::shared_ptr<Stmt>
     body = std::make_unique<Block>(
       std::vector<std::shared_ptr<Stmt>>{initializer, body});
   return body;
+}
+
+auto Parser::breakStatement() -> std::shared_ptr<Stmt>
+{
+  if(!inLoop)
+    throw error(previous(), "'break' statement not used in a loop.");
+  consume(TokenType::SEMICOLON, "Expect ';' after break keyword");
+  return std::make_shared<Break>();
 }
 
 auto Parser::expression() -> std::shared_ptr<Expr> { return assignment(); }

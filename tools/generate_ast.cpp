@@ -177,7 +177,8 @@ auto main(int argc, char *argv[]) -> int
            "thenBranch, std::shared_ptr<Stmt> elseBranch"},
     {"Print", "std::shared_ptr<Expr> expression"},
     {"Var", "Token name, std::shared_ptr<Expr> initializer"},
-    {"While", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body"}};
+    {"While", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body"},
+    {"Break", ""}};
 
   if(strcmp(argv[2], "0") == 0)
     {

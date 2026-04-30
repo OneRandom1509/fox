@@ -47,6 +47,7 @@ auto tokenTypeString(TokenType type) -> std::string
     case TokenType::AND: return "AND";
     case TokenType::BREAK: return "BREAK";
     case TokenType::CLASS: return "CLASS";
+    case TokenType::CONTINUE: return "CONTINUE";
     case TokenType::ELSE: return "ELSE";
     case TokenType::FALSE: return "FALSE";
     case TokenType::FUN: return "FUN";

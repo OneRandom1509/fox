@@ -62,6 +62,8 @@ auto Parser::statement() -> std::shared_ptr<Stmt>
     return forStatement();
   if(match({TokenType::BREAK}))
     return breakStatement();
+  if(match({TokenType::CONTINUE}))
+    return continueStatement();
   if(match({TokenType::LEFT_BRACE}))
     return std::make_shared<Block>(block());
 
@@ -186,8 +188,16 @@ auto Parser::breakStatement() -> std::shared_ptr<Stmt>
 {
   if(!inLoop)
     throw error(previous(), "'break' statement not used in a loop.");
-  consume(TokenType::SEMICOLON, "Expect ';' after break keyword");
+  consume(TokenType::SEMICOLON, "Expect ';' after 'break' keyword");
   return std::make_shared<Break>();
+}
+
+auto Parser::continueStatement() -> std::shared_ptr<Stmt>
+{
+  if(!inLoop)
+    throw error(previous(), "'continue' statement not used in a loop.");
+  consume(TokenType::SEMICOLON, "Expect ';' after 'continue' keyword");
+  return std::make_shared<Continue>();
 }
 
 auto Parser::expression() -> std::shared_ptr<Expr> { return assignment(); }

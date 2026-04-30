@@ -41,6 +41,7 @@ enum class TokenType
   AND,
   BREAK,
   CLASS,
+  CONTINUE,
   ELSE,
   FALSE,
   FUN,

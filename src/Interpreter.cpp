@@ -300,9 +300,15 @@ void Interpreter::visitWhileStmt(const While &stmt)
         {
           execute(*stmt.body);
         }
+
+      // Catching and executing Control Flow signals
       catch(BreakFlow &e)
         {
           break;
+        }
+      catch(ContinueFlow &e)
+        {
+          continue;
         }
     }
   return;
@@ -332,3 +338,9 @@ void Interpreter::executeBlock(
 
 // stmt argument is not used
 void Interpreter::visitBreakStmt(const Break &stmt) { throw BreakFlow{}; }
+
+// stmt argument is not used
+void Interpreter::visitContinueStmt(const Continue &stmt)
+{
+  throw ContinueFlow{};
+}

@@ -13,6 +13,7 @@ class Print;
 class Var;
 class While;
 class Break;
+class Continue;
 
 template <typename R> class VisitorStmt
 {
@@ -24,6 +25,7 @@ public:
   virtual auto visitVarStmt(const class Var &expr) -> R = 0;
   virtual auto visitWhileStmt(const class While &expr) -> R = 0;
   virtual auto visitBreakStmt(const class Break &expr) -> R = 0;
+  virtual auto visitContinueStmt(const class Continue &expr) -> R = 0;
   virtual ~VisitorStmt() = default;
 };
 
@@ -173,5 +175,21 @@ public:
   auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
   {
     return visitor.visitBreakStmt(*this);
+  }
+};
+
+class Continue : public Stmt
+{
+public:
+  Continue() = default;
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitContinueStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitContinueStmt(*this);
   }
 };

@@ -170,6 +170,8 @@ auto main(int argc, char *argv[]) -> int
                    "left, std::shared_ptr<Expr> right"},
        {"Variable", "Token name"}};
 
+  // Break and Continue requires a bit of cleanup after generation for their
+  // construction as it is an empty, it needs to be defaulted
   std::vector<TypeDef> stmtTypes = {
     {"Block", "std::vector<std::shared_ptr<Stmt>> statements"},
     {"Expression", "std::shared_ptr<Expr> expression"},
@@ -178,7 +180,8 @@ auto main(int argc, char *argv[]) -> int
     {"Print", "std::shared_ptr<Expr> expression"},
     {"Var", "Token name, std::shared_ptr<Expr> initializer"},
     {"While", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body"},
-    {"Break", ""}};
+    {"Break", ""},
+    {"Continue", ""}};
 
   if(strcmp(argv[2], "0") == 0)
     {

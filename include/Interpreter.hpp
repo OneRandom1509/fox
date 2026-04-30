@@ -8,7 +8,14 @@
 #include <vector>
 #include "Environment.hpp"
 
+/// Break Control Flow Signal:
+/// Used to detect break control flow at runtime and break the loop
 struct BreakFlow : public std::exception
+{};
+
+/// Continue Control Flow Signal:
+/// Used to detect continue control flow at runtime and continue the loop
+struct ContinueFlow : public std::exception
 {};
 
 class Interpreter : public VisitorStmt<void>, public VisitorExpr<literal_t>
@@ -22,6 +29,7 @@ public:
   void visitIfStmt(const If &stmt) override;
   void visitWhileStmt(const While &stmt) override;
   void visitBreakStmt(const Break &stmt) override;
+  void visitContinueStmt(const Continue &stmt) override;
 
   auto visitLiteralExpr(const Literal &expr) -> literal_t override;
   auto visitGroupingExpr(const Grouping &expr) -> literal_t override;

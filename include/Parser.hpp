@@ -27,7 +27,8 @@ private:
   size_t current = 0;
   bool inLoop = false; // Used to check if the parsed statements are in a loop,
                        // useful for detecting rogue break statements and
-                       // report them as syntax errors
+                       // report them as syntax errors (there's maybe a better
+                       // way of doing this)
   class ParseError : public std::exception
   {};
 
@@ -64,6 +65,9 @@ private:
 
   /// breakStmt      → "break" ;
   auto breakStatement() -> std::shared_ptr<Stmt>;
+
+  /// continueStmt   → "continue" ;
+  auto continueStatement() -> std::shared_ptr<Stmt>;
 
   /// expression     → assignment ;
   auto expression() -> std::shared_ptr<Expr>;

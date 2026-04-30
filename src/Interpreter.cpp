@@ -296,10 +296,12 @@ void Interpreter::visitWhileStmt(const While &stmt)
 {
   while(isTruthy(evaluate(*stmt.condition)))
     {
-      execute(*stmt.body);
-      if(breakSignal)
+      try
         {
-          breakSignal = false;
+          execute(*stmt.body);
+        }
+      catch(BreakFlow &e)
+        {
           break;
         }
     }
@@ -318,8 +320,6 @@ void Interpreter::executeBlock(
       for(const auto &statement : statements)
         {
           execute(*statement);
-          if(breakSignal)
-            break;
         }
       this->environment = previous;
     }
@@ -331,4 +331,4 @@ void Interpreter::executeBlock(
 }
 
 // stmt argument is not used
-void Interpreter::visitBreakStmt(const Break &stmt) { breakSignal = true; }
+void Interpreter::visitBreakStmt(const Break &stmt) { throw BreakFlow{}; }

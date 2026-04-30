@@ -3,9 +3,13 @@
 #include "Expr.hpp"
 #include "Stmt.hpp"
 #include "Token.hpp"
+#include <exception>
 #include <string>
 #include <vector>
 #include "Environment.hpp"
+
+struct BreakFlow : public std::exception
+{};
 
 class Interpreter : public VisitorStmt<void>, public VisitorExpr<literal_t>
 {
@@ -33,8 +37,6 @@ public:
 
 private:
   literal_t result;
-  bool breakSignal = false; // This will be used for breaking loops when break
-                            // statement is encountered
   std::shared_ptr<Environment> environment = std::make_shared<Environment>();
 
   inline void execute(Stmt &stmt);

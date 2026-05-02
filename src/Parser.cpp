@@ -377,7 +377,22 @@ auto Parser::unary() -> std::shared_ptr<Expr>
       return std::make_shared<Unary>(op, (right));
     }
 
-  return primary();
+  return call();
+}
+
+auto Parser::call() -> std::shared_ptr<Expr>
+{
+  auto expr = primary();
+
+  while(true)
+    {
+      if(match({TokenType::LEFT_PAREN}))
+        expr = finishCall(expr);
+      else
+        break;
+    }
+
+  return expr;
 }
 
 auto Parser::primary() -> std::shared_ptr<Expr>
@@ -484,4 +499,23 @@ auto Parser::error(Token token, std::string message) -> Parser::ParseError
 {
   Executor::error(token, message);
   return ParseError{};
+}
+
+auto Parser::finishCall(std::shared_ptr<Expr> callee) -> std::shared_ptr<Expr>
+{
+  std::vector<std::shared_ptr<Expr>> arguments;
+  if(!check(TokenType::RIGHT_PAREN))
+    {
+      do
+        {
+          // The argument limit is optional but we're just keeping it to
+          // simplify the future bytecode interpreter
+          if(arguments.size() >= 255)
+            error(peek(), "Can't have more than 255 arguments.");
+          arguments.push_back(expression());
+      } while(match({TokenType::COMMA}));
+    }
+
+  Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments");
+  return std::make_shared<Call>(callee, paren, arguments);
 }

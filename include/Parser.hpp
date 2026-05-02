@@ -110,8 +110,11 @@ private:
   auto factor() -> std::shared_ptr<Expr>;
 
   /// unary          → ( "!" | "-" ) unary
-  //                | primary ;
+  //                   | call ;
   auto unary() -> std::shared_ptr<Expr>;
+
+  /// call           → primary ( "(" arguments? ")" )* ;
+  auto call() -> std::shared_ptr<Expr>;
 
   /// primary        → NUMBER | STRING | "true" | "false" | "nil"
   ///                | "(" expression ")" | IDENTIFIER ;
@@ -122,6 +125,8 @@ private:
   auto match(std::initializer_list<TokenType> types) -> bool;
 
   auto check(TokenType type) -> bool;
+
+  auto finishCall(std::shared_ptr<Expr> callee) -> std::shared_ptr<Expr>;
 
   inline auto advance() -> Token;
 

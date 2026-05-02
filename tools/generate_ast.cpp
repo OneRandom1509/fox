@@ -109,13 +109,13 @@ void defineAst(const std::string &outputDir, const std::string &baseName,
   writer << "#pragma once\n\n";
   writer << "#include <memory>\n";
   writer << "#include <utility>\n";
+  writer << "#include <vector>\n";
   writer << "#include \"Token.hpp\"\n";
 
   // Include Expr.hpp if we are generating Stmt.hpp
   if(baseName == "Stmt")
     {
       writer << "#include \"Expr.hpp\"\n";
-      writer << "#include <vector>\n";
     }
   writer << "\n";
 
@@ -160,28 +160,30 @@ auto main(int argc, char *argv[]) -> int
     = {{"Assign", "Token name, std::shared_ptr<Expr> value"},
        {"Binary", "std::shared_ptr<Expr> left, Token operator_, "
                   "std::shared_ptr<Expr> right"},
+       {"Call", "std::shared_ptr<Expr> callee, Token paren, "
+                "std::vector<std::shared_ptr<Expr>> arguments"},
+       {"Comma", "std::shared_ptr<Expr> left, std::shared_ptr<Expr> right"},
        {"Grouping", "std::shared_ptr<Expr> expression"},
        {"Literal", "literal_t value"},
        {"Logical", "std::shared_ptr<Expr> left, Token operator_, "
                    "std::shared_ptr<Expr> right"},
-       {"Unary", "Token operator_, std::shared_ptr<Expr> right"},
-       {"Comma", "std::shared_ptr<Expr> left, std::shared_ptr<Expr> right"},
        {"Ternary", "std::shared_ptr<Expr> condition, std::shared_ptr<Expr> "
                    "left, std::shared_ptr<Expr> right"},
+       {"Unary", "Token operator_, std::shared_ptr<Expr> right"},
        {"Variable", "Token name"}};
 
   // Break and Continue requires a bit of cleanup after generation for their
   // construction as it is an empty, it needs to be defaulted
   std::vector<TypeDef> stmtTypes = {
     {"Block", "std::vector<std::shared_ptr<Stmt>> statements"},
+    {"Break", ""},
+    {"Continue", ""},
     {"Expression", "std::shared_ptr<Expr> expression"},
     {"If", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> "
            "thenBranch, std::shared_ptr<Stmt> elseBranch"},
     {"Print", "std::shared_ptr<Expr> expression"},
     {"Var", "Token name, std::shared_ptr<Expr> initializer"},
-    {"While", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body"},
-    {"Break", ""},
-    {"Continue", ""}};
+    {"While", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body"}};
 
   if(strcmp(argv[2], "0") == 0)
     {

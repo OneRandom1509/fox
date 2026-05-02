@@ -3,13 +3,34 @@
 #include "Token.hpp"
 #include "RuntimeError.hpp"
 #include "Interpreter.hpp"
+#include <chrono>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <variant>
 #include <vector>
 #include "Environment.hpp"
+#include "FoxCallable.hpp"
 
-Interpreter::Interpreter() = default;
+class Clock : public FoxCallable
+{
+public:
+  auto arity() -> size_t override { return 0; }
+
+  auto call(Interpreter interpreter, std::vector<literal_t> arguments)
+    -> literal_t override
+  {
+    return (double)std::chrono::system_clock::now().time_since_epoch().count()
+           / 1000000000.0; // nanoseconds to seconds
+  }
+
+  auto toString() -> std::string override { return "<native fn>"; }
+};
+
+Interpreter::Interpreter()
+{
+  globals->define("clock", {true, std::make_shared<Clock>()});
+}
 
 void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> &statements)
 {
@@ -343,4 +364,30 @@ void Interpreter::visitBreakStmt(const Break &stmt) { throw BreakFlow{}; }
 void Interpreter::visitContinueStmt(const Continue &stmt)
 {
   throw ContinueFlow{};
+}
+
+auto Interpreter::visitCallExpr(const Call &expr) -> literal_t
+{
+  literal_t callee = evaluate(*expr.callee);
+
+  std::vector<literal_t> arguments;
+
+  for(auto &argument : expr.arguments)
+    {
+      arguments.push_back(evaluate(*argument));
+    }
+
+  if(!std::holds_alternative<std::shared_ptr<FoxCallable>>(callee))
+    throw RuntimeError(expr.paren, "Can only call functions and classes.");
+
+  auto function = std::get<std::shared_ptr<FoxCallable>>(callee);
+
+  if(arguments.size() != function->arity())
+    {
+      throw RuntimeError(expr.paren,
+                         "Expected " + std::to_string(function->arity())
+                           + " arguments but got "
+                           + std::to_string(arguments.size()) + ".");
+    }
+  return function->call(*this, arguments);
 }

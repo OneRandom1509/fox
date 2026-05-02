@@ -79,11 +79,15 @@ auto literalToString(literal_t literal) -> std::string
     {
       return std::get<std::string>(literal);
     }
-  else
+  else if(std::holds_alternative<bool>(literal))
     {
       if(std::get<bool>(literal) == true)
         return "true";
       else
         return "false";
+    }
+  else
+    {
+      return "<function>";
     }
 }

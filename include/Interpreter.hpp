@@ -4,6 +4,7 @@
 #include "Stmt.hpp"
 #include "Token.hpp"
 #include <exception>
+#include <memory>
 #include <string>
 #include <vector>
 #include "Environment.hpp"
@@ -21,6 +22,8 @@ struct ContinueFlow : public std::exception
 class Interpreter : public VisitorStmt<void>, public VisitorExpr<literal_t>
 {
 public:
+  const std::shared_ptr<Environment> globals = std::make_shared<Environment>();
+
   Interpreter();
   void visitExpressionStmt(const Expression &stmt) override;
   void visitPrintStmt(const Print &stmt) override;
@@ -40,12 +43,13 @@ public:
   auto visitTernaryExpr(const Ternary &expr) -> literal_t override;
   auto visitVariableExpr(const Variable &expr) -> literal_t override;
   auto visitAssignExpr(const Assign &expr) -> literal_t override;
+  auto visitCallExpr(const Call &expr) -> literal_t override;
 
   void interpret(std::vector<std::shared_ptr<Stmt>> &statements);
 
 private:
   literal_t result;
-  std::shared_ptr<Environment> environment = std::make_shared<Environment>();
+  std::shared_ptr<Environment> environment = globals;
 
   inline void execute(Stmt &stmt);
   void executeBlock(const std::vector<std::shared_ptr<Stmt>> &statements,

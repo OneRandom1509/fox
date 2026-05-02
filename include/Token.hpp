@@ -2,8 +2,12 @@
 
 #include <string>
 #include <variant>
+#include <memory>
 
-using literal_t = std::variant<std::monostate, double, std::string, bool>;
+class FoxCallable; // Forward declaration to avoid circular dependency
+
+using literal_t = std::variant<std::monostate, double, std::string, bool,
+                               std::shared_ptr<FoxCallable>>;
 
 enum class TokenType
 {

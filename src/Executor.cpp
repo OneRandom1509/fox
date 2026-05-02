@@ -101,6 +101,7 @@ void Executor::report(int line, std::string where, std::string message)
             << std::endl;
   hadError = true;
 }
+
 void Executor::runtimeError(RuntimeError &error)
 {
   std::cerr << error.what() << "\n[line" << error.token.line << "]"

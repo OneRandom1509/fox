@@ -7,6 +7,16 @@
 #include <memory>
 #include <vector>
 
+/// LoopGuard: acts as a guard for keeping track of top level loops to catch
+/// control flow related syntax errors during parsing.
+struct LoopGuard
+{
+  bool &curr;
+  bool top;
+  LoopGuard(bool &f) : curr(f), top(f) { curr = true; }
+  ~LoopGuard() { curr = top; }
+};
+
 /// This is the implementation of a recursive descent parser where we move from
 /// the resursively descent from the lowest precedence to the highest
 /// precedence Exprs. That is, each production will only call either itself, or

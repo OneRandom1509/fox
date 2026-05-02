@@ -116,33 +116,18 @@ auto Parser::ifStatement() -> std::shared_ptr<Stmt>
 
 auto Parser::whileStatement() -> std::shared_ptr<Stmt>
 {
-  // Could probably use a guard sorta thing for this topLevel loop detection
-  bool topLevel = false;
-  if(!inLoop)
-    {
-      topLevel = true;
-      inLoop = true;
-    }
+  LoopGuard guard(inLoop);
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'while'.");
   auto condition = expression();
   consume(TokenType::RIGHT_PAREN, "Expect ')' after while condition.");
   auto stmt = statement();
-  if(topLevel)
-    inLoop = false;
 
   return std::make_shared<While>(condition, stmt);
 }
 
 auto Parser::forStatement() -> std::shared_ptr<Stmt>
 {
-  // Same thing for the topLevel loop detection here as well
-  bool topLevel = false;
-  if(!inLoop)
-    {
-      topLevel = true;
-      inLoop = true;
-    }
-
+  LoopGuard guard(inLoop);
   consume(TokenType::LEFT_PAREN, "Expect '(' after 'for'.");
 
   std::shared_ptr<Stmt> initializer;
@@ -164,9 +149,6 @@ auto Parser::forStatement() -> std::shared_ptr<Stmt>
   consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
 
   auto body = statement();
-
-  if(topLevel)
-    inLoop = false;
 
   if(increment != nullptr)
     {
@@ -434,7 +416,9 @@ void Parser::synchronize()
 
       switch(peek().type)
         {
+        case TokenType::BREAK:
         case TokenType::CLASS:
+        case TokenType::CONTINUE:
         case TokenType::FUN:
         case TokenType::LET:
         case TokenType::FOR:

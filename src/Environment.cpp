@@ -25,6 +25,8 @@ auto Environment::get(Token name) const -> literal_t
   throw RuntimeError{name, "Undefined variable '" + name.lexeme + "'."};
 }
 
+/// define -> name: name of the literal, value -> pair of bool
+/// (initialized/uninitialized) and literal_t
 void Environment::define(std::string name, std::pair<bool, literal_t> value)
 {
   values.insert_or_assign(name, value);

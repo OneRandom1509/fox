@@ -11,10 +11,12 @@
 /// control flow related syntax errors during parsing.
 struct LoopGuard
 {
+  /// current inLoop value
   bool &curr;
-  bool top;
-  LoopGuard(bool &f) : curr(f), top(f) { curr = true; }
-  ~LoopGuard() { curr = top; }
+  /// previous inLoop value
+  bool prev;
+  LoopGuard(bool &f) : curr(f), prev(f) { curr = true; }
+  ~LoopGuard() { curr = prev; }
 };
 
 /// This is the implementation of a recursive descent parser where we move from

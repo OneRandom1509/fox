@@ -3,7 +3,6 @@
 #include "Token.hpp"
 #include "RuntimeError.hpp"
 #include "Interpreter.hpp"
-#include <chrono>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -11,21 +10,7 @@
 #include <vector>
 #include "Environment.hpp"
 #include "FoxCallable.hpp"
-
-class Clock : public FoxCallable
-{
-public:
-  auto arity() -> size_t override { return 0; }
-
-  auto call(Interpreter interpreter, std::vector<literal_t> arguments)
-    -> literal_t override
-  {
-    return (double)std::chrono::system_clock::now().time_since_epoch().count()
-           / 1000000000.0; // nanoseconds to seconds
-  }
-
-  auto toString() -> std::string override { return "<native fn>"; }
-};
+#include "lib/libfox.hpp"
 
 Interpreter::Interpreter()
 {

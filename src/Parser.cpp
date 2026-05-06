@@ -540,8 +540,8 @@ auto Parser::function(std::string kind) -> std::shared_ptr<Stmt>
           parameters.push_back(
             consume(TokenType::IDENTIFIER, "Expect parameter name."));
       } while(match({TokenType::COMMA}));
-      consume(TokenType::RIGHT_PAREN, "Expect ')' after " + kind + " name.");
     }
+  consume(TokenType::RIGHT_PAREN, "Expect ')' after " + kind + " name.");
 
   // Function body
   consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + " body.");

@@ -44,6 +44,7 @@ public:
   void visitFunctionStmt(const Function &stmt) override;
   void visitReturnStmt(const Return &stmt) override;
 
+  auto visitFunctionBodyExpr(const FunctionBody &expr) -> literal_t override;
   auto visitLiteralExpr(const Literal &expr) -> literal_t override;
   auto visitGroupingExpr(const Grouping &expr) -> literal_t override;
   auto visitUnaryExpr(const Unary &expr) -> literal_t override;

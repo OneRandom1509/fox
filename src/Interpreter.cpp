@@ -380,9 +380,12 @@ auto Interpreter::visitCallExpr(const Call &expr) -> literal_t
 
 void Interpreter::visitFunctionStmt(const Function &stmt)
 {
-  // is making the function statement a shared ptr actually needed?
+  auto declaration = std::dynamic_pointer_cast<FunctionBody>(stmt.body);
+  if(declaration == nullptr)
+    throw RuntimeError(stmt.name, "Invalid function declaration body.");
+
   FoxFunction function
-    = FoxFunction(std::make_shared<Function>(stmt), environment);
+    = FoxFunction(stmt.name.lexeme, declaration, environment);
 
   environment->define(stmt.name.lexeme,
                       {true, std::make_shared<FoxFunction>(function)});
@@ -397,4 +400,10 @@ void Interpreter::visitReturnStmt(const Return &stmt)
     value = evaluate(*stmt.value);
 
   throw ReturnFlow(value);
+}
+
+auto Interpreter::visitFunctionBodyExpr(const FunctionBody &expr) -> literal_t
+{
+  auto declaration = std::make_shared<FunctionBody>(expr);
+  return std::make_shared<FoxFunction>("", declaration, environment);
 }

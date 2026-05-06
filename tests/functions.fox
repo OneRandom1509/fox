@@ -28,3 +28,17 @@ fun makeCounter() {
 let counter = makeCounter();
 counter(); // 1
 counter(); // 2
+
+// Anonymous functions (1, 2, 3)
+fun thrice(fn) {
+  for (let i = 1; i <= 3; i = i + 1) {
+    fn(i);
+  }
+}
+
+thrice(fun (a) {
+  print a;
+});
+
+// nothing
+fun () {};

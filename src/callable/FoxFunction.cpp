@@ -3,9 +3,11 @@
 #include "Interpreter.hpp"
 #include <utility>
 
-FoxFunction::FoxFunction(std::shared_ptr<Function> declaration,
+FoxFunction::FoxFunction(std::string name,
+                         std::shared_ptr<FunctionBody> declaration,
                          Environment environment)
-    : declaration(std::move(declaration)), closure(std::move(environment))
+    : name(std::move(name)), declaration(std::move(declaration)),
+      closure(std::move(environment))
 {}
 
 auto FoxFunction::arity() -> size_t { return declaration->params.size(); }
@@ -35,5 +37,7 @@ auto FoxFunction::call(Interpreter interpreter,
 
 auto FoxFunction::toString() -> std::string
 {
-  return "<fn " + declaration->name.lexeme + ">";
+  if(name == "")
+    return "<fn>";
+  return "<fn " + name + ">";
 }

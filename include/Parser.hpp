@@ -127,8 +127,11 @@ private:
   auto call() -> std::shared_ptr<Expr>;
 
   /// primary        → NUMBER | STRING | "true" | "false" | "nil"
-  ///                | "(" expression ")" | IDENTIFIER ;
+  ///                | "(" expression ")" | IDENTIFIER | functionBody ;
   auto primary() -> std::shared_ptr<Expr>;
+
+  /// functionBody   → "fun" "(" parameters? ")" block ;
+  auto functionBody(std::string kind) -> std::shared_ptr<Expr>;
 
   void synchronize();
 
@@ -139,6 +142,8 @@ private:
   auto finishCall(std::shared_ptr<Expr> callee) -> std::shared_ptr<Expr>;
 
   inline auto advance() -> Token;
+
+  inline auto checkNext(TokenType tokenType) -> bool;
 
   inline auto isAtEnd() -> bool;
 

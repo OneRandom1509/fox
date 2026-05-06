@@ -6,8 +6,16 @@
 #include <exception>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include "Environment.hpp"
+
+struct ReturnFlow : public std::exception
+{
+  const literal_t value;
+
+  ReturnFlow(literal_t value) : value(std::move(value)) {}
+};
 
 /// Break Control Flow Signal:
 /// Used to detect break control flow at runtime and break the loop
@@ -34,6 +42,7 @@ public:
   void visitBreakStmt(const Break &stmt) override;
   void visitContinueStmt(const Continue &stmt) override;
   void visitFunctionStmt(const Function &stmt) override;
+  void visitReturnStmt(const Return &stmt) override;
 
   auto visitLiteralExpr(const Literal &expr) -> literal_t override;
   auto visitGroupingExpr(const Grouping &expr) -> literal_t override;

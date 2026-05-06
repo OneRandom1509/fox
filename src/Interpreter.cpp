@@ -1,5 +1,6 @@
 #include "Executor.hpp"
 #include "Expr.hpp"
+#include "FoxFunction.hpp"
 #include "Token.hpp"
 #include "RuntimeError.hpp"
 #include "Interpreter.hpp"
@@ -377,4 +378,22 @@ auto Interpreter::visitCallExpr(const Call &expr) -> literal_t
   return function->call(*this, arguments);
 }
 
-void Interpreter::visitFunctionStmt(const Function &stmt) {}
+void Interpreter::visitFunctionStmt(const Function &stmt)
+{
+  // is making the function statement a shared ptr actually needed?
+  FoxFunction function = FoxFunction(std::make_shared<Function>(stmt));
+
+  environment->define(stmt.name.lexeme,
+                      {true, std::make_shared<FoxFunction>(function)});
+  return;
+}
+
+void Interpreter::visitReturnStmt(const Return &stmt)
+{
+  literal_t value = std::monostate{};
+
+  if(stmt.value != nullptr)
+    value = evaluate(*stmt.value);
+
+  throw ReturnFlow(value);
+}

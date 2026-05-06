@@ -1,4 +1,5 @@
 #include "FoxFunction.hpp"
+#include "Interpreter.hpp"
 #include <utility>
 
 FoxFunction::FoxFunction(std::shared_ptr<Function> declaration)
@@ -16,8 +17,15 @@ auto FoxFunction::call(Interpreter interpreter,
       environment.define(declaration->params.at(i).lexeme,
                          {true, arguments.at(i)});
     }
-  interpreter.executeBlock(declaration->body,
-                           std::make_shared<Environment>(environment));
+  try
+    {
+      interpreter.executeBlock(declaration->body,
+                               std::make_shared<Environment>(environment));
+    }
+  catch(ReturnFlow &ret)
+    {
+      return ret.value;
+    }
 
   // returning nil in case there is no explicit return statement
   return std::monostate{};

@@ -48,17 +48,15 @@ private:
   auto declaration() -> std::shared_ptr<Stmt>;
 
   /// funDecl        → "fun" function ;
-
   /// function       → IDENTIFIER "(" parameters? ")" block ;
-  auto function(std::string kind) -> std::shared_ptr<Stmt>;
-
   /// parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
+  auto function(std::string kind) -> std::shared_ptr<Stmt>;
 
   /// varDecl        → "let" IDENTIFIER ( "=" expression )? ";" ;
   auto varDeclaration() -> std::shared_ptr<Stmt>;
 
-  /// statement      → exprStmt | printStmt | blockStmt | ifStmt | whileStmt |
-  ///                  forStmt ;
+  /// statement      → exprStmt | printStmt | blockStmt | ifStmt | returnStmt |
+  ///                  whileStmt | forStmt ;
   auto statement() -> std::shared_ptr<Stmt>;
 
   /// block          → "{" declaration* "}" ;
@@ -73,6 +71,9 @@ private:
   /// ifStmt         → "if" "(" expression ")" statement
   ///                ( "else" statement )? ;
   auto ifStatement() -> std::shared_ptr<Stmt>;
+
+  /// returnStmt     → "return" expression? ";" ;
+  auto returnStatement() -> std::shared_ptr<Stmt>;
 
   /// whileStmt      → "while" "(" expression ")" statement ;
   auto whileStatement() -> std::shared_ptr<Stmt>;

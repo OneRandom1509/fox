@@ -66,8 +66,6 @@ auto Parser::statement() -> std::shared_ptr<Stmt>
     return breakStatement();
   if(match({TokenType::CONTINUE}))
     return continueStatement();
-  if(match({TokenType::RETURN}))
-    return returnStatement();
   if(match({TokenType::LEFT_BRACE}))
     return std::make_shared<Block>(block());
 
@@ -550,18 +548,4 @@ auto Parser::function(std::string kind) -> std::shared_ptr<Stmt>
   std::vector<std::shared_ptr<Stmt>> body = block();
 
   return std::make_shared<Function>(name, parameters, body);
-}
-
-auto Parser::returnStatement() -> std::shared_ptr<Stmt>
-{
-  Token keyword = previous();
-  std::shared_ptr<Expr> value = nullptr;
-
-  if(!check(TokenType::SEMICOLON))
-    {
-      value = expression();
-    }
-
-  consume(TokenType::SEMICOLON, "Expect ';' after return value.");
-  return std::make_shared<Return>(keyword, value);
 }

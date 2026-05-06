@@ -173,7 +173,7 @@ auto main(int argc, char *argv[]) -> int
        {"Variable", "Token name"}};
 
   // Break and Continue requires a bit of cleanup after generation for their
-  // constructor as it is empty, it needs to be defaulted
+  // construction as it is an empty, it needs to be defaulted
   std::vector<TypeDef> stmtTypes = {
     {"Block", "std::vector<std::shared_ptr<Stmt>> statements"},
     {"Break", ""},
@@ -184,7 +184,6 @@ auto main(int argc, char *argv[]) -> int
     {"If", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> "
            "thenBranch, std::shared_ptr<Stmt> elseBranch"},
     {"Print", "std::shared_ptr<Expr> expression"},
-    {"Return", "Token keyword, std::shared_ptr<Expr> value"},
     {"Var", "Token name, std::shared_ptr<Expr> initializer"},
     {"While", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body"}};
 

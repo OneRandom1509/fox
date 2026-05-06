@@ -13,7 +13,6 @@ class Expression;
 class Function;
 class If;
 class Print;
-class Return;
 class Var;
 class While;
 
@@ -27,7 +26,6 @@ public:
   virtual auto visitFunctionStmt(const class Function &expr) -> R = 0;
   virtual auto visitIfStmt(const class If &expr) -> R = 0;
   virtual auto visitPrintStmt(const class Print &expr) -> R = 0;
-  virtual auto visitReturnStmt(const class Return &expr) -> R = 0;
   virtual auto visitVarStmt(const class Var &expr) -> R = 0;
   virtual auto visitWhileStmt(const class While &expr) -> R = 0;
   virtual ~VisitorStmt() = default;
@@ -177,27 +175,6 @@ public:
   }
 
   const std::shared_ptr<Expr> expression;
-};
-
-class Return : public Stmt
-{
-public:
-  Return(Token keyword, std::shared_ptr<Expr> value)
-      : keyword(std::move(keyword)), value(std::move(value))
-  {}
-
-  auto accept(VisitorStmt<void> &visitor) const -> void override
-  {
-    visitor.visitReturnStmt(*this);
-  }
-
-  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitReturnStmt(*this);
-  }
-
-  const Token keyword;
-  const std::shared_ptr<Expr> value;
 };
 
 class Var : public Stmt

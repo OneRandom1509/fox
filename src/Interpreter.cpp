@@ -344,10 +344,10 @@ void Interpreter::executeBlock(
 }
 
 // stmt argument is not used
-void Interpreter::visitBreakStmt(const Break &stmt) { throw BreakFlow{}; }
+void Interpreter::visitBreakStmt(const Break &_stmt) { throw BreakFlow{}; }
 
 // stmt argument is not used
-void Interpreter::visitContinueStmt(const Continue &stmt)
+void Interpreter::visitContinueStmt(const Continue &_stmt)
 {
   throw ContinueFlow{};
 }

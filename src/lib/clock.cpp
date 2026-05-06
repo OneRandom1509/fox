@@ -3,7 +3,7 @@
 
 auto Clock::arity() -> size_t { return 0; }
 
-auto Clock::call(Interpreter interpreter, std::vector<literal_t> arguments)
+auto Clock::call(Interpreter _interpreter, std::vector<literal_t> _arguments)
   -> literal_t
 {
   return (double)std::chrono::system_clock::now().time_since_epoch().count()

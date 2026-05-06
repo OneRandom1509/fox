@@ -116,9 +116,8 @@ public:
 class Function : public Stmt
 {
 public:
-  Function(Token name, std::vector<Token> params,
-           std::vector<std::shared_ptr<Stmt>> body)
-      : name(std::move(name)), params(std::move(params)), body(std::move(body))
+  Function(Token name, std::shared_ptr<Expr> body)
+      : name(std::move(name)), body(std::move(body))
   {}
 
   auto accept(VisitorStmt<void> &visitor) const -> void override
@@ -132,8 +131,7 @@ public:
   }
 
   const Token name;
-  const std::vector<Token> params;
-  const std::vector<std::shared_ptr<Stmt>> body;
+  const std::shared_ptr<Expr> body;
 };
 
 class If : public Stmt

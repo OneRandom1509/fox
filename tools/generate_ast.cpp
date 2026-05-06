@@ -163,6 +163,8 @@ auto main(int argc, char *argv[]) -> int
        {"Call", "std::shared_ptr<Expr> callee, Token paren, "
                 "std::vector<std::shared_ptr<Expr>> arguments"},
        {"Comma", "std::shared_ptr<Expr> left, std::shared_ptr<Expr> right"},
+       {"FunctionBody",
+        "std::vector<Token> params, std::vector<std::shared_ptr<Stmt>> body"},
        {"Grouping", "std::shared_ptr<Expr> expression"},
        {"Literal", "literal_t value"},
        {"Logical", "std::shared_ptr<Expr> left, Token operator_, "
@@ -179,8 +181,7 @@ auto main(int argc, char *argv[]) -> int
     {"Break", ""},
     {"Continue", ""},
     {"Expression", "std::shared_ptr<Expr> expression"},
-    {"Function", "Token name, std::vector<Token> params, "
-                 "std::vector<std::shared_ptr<Stmt>> body"},
+    {"Function", "Token name, std::shared_ptr<Expr> body"},
     {"If", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> "
            "thenBranch, std::shared_ptr<Stmt> elseBranch"},
     {"Print", "std::shared_ptr<Expr> expression"},

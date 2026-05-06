@@ -5,10 +5,12 @@
 #include <vector>
 #include "Token.hpp"
 
+class Stmt;
 class Assign;
 class Binary;
 class Call;
 class Comma;
+class FunctionBody;
 class Grouping;
 class Literal;
 class Logical;
@@ -23,6 +25,7 @@ public:
   virtual auto visitBinaryExpr(const class Binary &expr) -> R = 0;
   virtual auto visitCallExpr(const class Call &expr) -> R = 0;
   virtual auto visitCommaExpr(const class Comma &expr) -> R = 0;
+  virtual auto visitFunctionBodyExpr(const class FunctionBody &expr) -> R = 0;
   virtual auto visitGroupingExpr(const class Grouping &expr) -> R = 0;
   virtual auto visitLiteralExpr(const class Literal &expr) -> R = 0;
   virtual auto visitLogicalExpr(const class Logical &expr) -> R = 0;
@@ -128,6 +131,28 @@ public:
 
   const std::shared_ptr<Expr> left;
   const std::shared_ptr<Expr> right;
+};
+
+class FunctionBody : public Expr
+{
+public:
+  FunctionBody(std::vector<Token> params,
+               std::vector<std::shared_ptr<Stmt>> body)
+      : params(std::move(params)), body(std::move(body))
+  {}
+
+  auto accept(VisitorExpr<void> &visitor) const -> void override
+  {
+    visitor.visitFunctionBodyExpr(*this);
+  }
+
+  auto accept(VisitorExpr<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitFunctionBodyExpr(*this);
+  }
+
+  const std::vector<Token> params;
+  const std::vector<std::shared_ptr<Stmt>> body;
 };
 
 class Grouping : public Expr

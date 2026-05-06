@@ -1,9 +1,11 @@
 #include "FoxFunction.hpp"
+#include "Environment.hpp"
 #include "Interpreter.hpp"
 #include <utility>
 
-FoxFunction::FoxFunction(std::shared_ptr<Function> declaration)
-    : declaration(std::move(declaration))
+FoxFunction::FoxFunction(std::shared_ptr<Function> declaration,
+                         Environment environment)
+    : declaration(std::move(declaration)), closure(std::move(environment))
 {}
 
 auto FoxFunction::arity() -> size_t { return declaration->params.size(); }
@@ -11,7 +13,7 @@ auto FoxFunction::arity() -> size_t { return declaration->params.size(); }
 auto FoxFunction::call(Interpreter interpreter,
                        std::vector<literal_t> arguments) -> literal_t
 {
-  Environment environment = Environment(interpreter.globals);
+  Environment environment = Environment(closure);
   for(size_t i = 0; i < declaration->params.size(); i++)
     {
       environment.define(declaration->params.at(i).lexeme,

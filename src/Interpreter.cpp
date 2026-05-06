@@ -381,7 +381,8 @@ auto Interpreter::visitCallExpr(const Call &expr) -> literal_t
 void Interpreter::visitFunctionStmt(const Function &stmt)
 {
   // is making the function statement a shared ptr actually needed?
-  FoxFunction function = FoxFunction(std::make_shared<Function>(stmt));
+  FoxFunction function
+    = FoxFunction(std::make_shared<Function>(stmt), environment);
 
   environment->define(stmt.name.lexeme,
                       {true, std::make_shared<FoxFunction>(function)});

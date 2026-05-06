@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Environment.hpp"
 #include "FoxCallable.hpp"
 #include "Interpreter.hpp"
 #include "Stmt.hpp"
@@ -10,7 +11,7 @@
 class FoxFunction : public FoxCallable
 {
 public:
-  FoxFunction(std::shared_ptr<Function> declaration);
+  FoxFunction(std::shared_ptr<Function> declaration, Environment closure);
   auto arity() -> size_t override;
   auto call(Interpreter interpreter, std::vector<literal_t> arguments)
     -> literal_t override;
@@ -18,4 +19,8 @@ public:
 
 private:
   const std::shared_ptr<Function> declaration;
+
+  // inherits the parent environment (either main interpreter or parent
+  // function's environment)
+  const Environment closure;
 };

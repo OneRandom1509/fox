@@ -10,6 +10,7 @@
 #include <vector>
 #include "Environment.hpp"
 #include "FoxCallable.hpp"
+#include "libfox.hpp"
 
 Interpreter::Interpreter()
 {
@@ -375,3 +376,5 @@ auto Interpreter::visitCallExpr(const Call &expr) -> literal_t
     }
   return function->call(*this, arguments);
 }
+
+void Interpreter::visitFunctionStmt(const Function &stmt) {}

@@ -36,6 +36,7 @@ set(FOX_SOURCES
     src/RuntimeError.cpp
     src/Interpreter.cpp
     src/Environment.cpp
+    src/callable/FoxFunction.cpp
     src/lib/clock.cpp
 )
 
@@ -50,6 +51,7 @@ target_include_directories(fox
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/include/ast
         ${PROJECT_SOURCE_DIR}/include/lib
+        ${PROJECT_SOURCE_DIR}/include/callable
 )
 
 # ------------------------------------------------

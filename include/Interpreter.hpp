@@ -33,6 +33,7 @@ public:
   void visitWhileStmt(const While &stmt) override;
   void visitBreakStmt(const Break &stmt) override;
   void visitContinueStmt(const Continue &stmt) override;
+  void visitFunctionStmt(const Function &stmt) override;
 
   auto visitLiteralExpr(const Literal &expr) -> literal_t override;
   auto visitGroupingExpr(const Grouping &expr) -> literal_t override;
@@ -47,13 +48,17 @@ public:
 
   void interpret(std::vector<std::shared_ptr<Stmt>> &statements);
 
+  // This is made public so that callables (like functions) can pass in their
+  // own statements and environment and execute them without hindering the
+  // environment of the interpreter
+  void executeBlock(const std::vector<std::shared_ptr<Stmt>> &statements,
+                    std::shared_ptr<Environment> environment);
+
 private:
   literal_t result;
   std::shared_ptr<Environment> environment = globals;
 
   inline void execute(Stmt &stmt);
-  void executeBlock(const std::vector<std::shared_ptr<Stmt>> &statements,
-                    std::shared_ptr<Environment> environment);
   auto inline evaluate(Expr &expr) -> literal_t;
   [[nodiscard]] auto inline isTruthy(literal_t literal) const -> bool;
   [[nodiscard]] auto inline isEqual(literal_t a, literal_t b) const -> bool;

@@ -2,30 +2,32 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 #include "Token.hpp"
 #include "Expr.hpp"
-#include <vector>
 
 class Block;
+class Break;
+class Continue;
 class Expression;
+class Function;
 class If;
 class Print;
 class Var;
 class While;
-class Break;
-class Continue;
 
 template <typename R> class VisitorStmt
 {
 public:
   virtual auto visitBlockStmt(const class Block &expr) -> R = 0;
+  virtual auto visitBreakStmt(const class Break &expr) -> R = 0;
+  virtual auto visitContinueStmt(const class Continue &expr) -> R = 0;
   virtual auto visitExpressionStmt(const class Expression &expr) -> R = 0;
+  virtual auto visitFunctionStmt(const class Function &expr) -> R = 0;
   virtual auto visitIfStmt(const class If &expr) -> R = 0;
   virtual auto visitPrintStmt(const class Print &expr) -> R = 0;
   virtual auto visitVarStmt(const class Var &expr) -> R = 0;
   virtual auto visitWhileStmt(const class While &expr) -> R = 0;
-  virtual auto visitBreakStmt(const class Break &expr) -> R = 0;
-  virtual auto visitContinueStmt(const class Continue &expr) -> R = 0;
   virtual ~VisitorStmt() = default;
 };
 
@@ -57,6 +59,38 @@ public:
   const std::vector<std::shared_ptr<Stmt>> statements;
 };
 
+class Break : public Stmt
+{
+public:
+  Break() = default;
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitBreakStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitBreakStmt(*this);
+  }
+};
+
+class Continue : public Stmt
+{
+public:
+  Continue() = default;
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitContinueStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitContinueStmt(*this);
+  }
+};
+
 class Expression : public Stmt
 {
 public:
@@ -75,6 +109,30 @@ public:
   }
 
   const std::shared_ptr<Expr> expression;
+};
+
+class Function : public Stmt
+{
+public:
+  Function(Token token, std::vector<Token> params,
+           std::vector<std::shared_ptr<Stmt>> body)
+      : token(std::move(token)), params(std::move(params)),
+        body(std::move(body))
+  {}
+
+  auto accept(VisitorStmt<void> &visitor) const -> void override
+  {
+    visitor.visitFunctionStmt(*this);
+  }
+
+  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
+  {
+    return visitor.visitFunctionStmt(*this);
+  }
+
+  const Token token;
+  const std::vector<Token> params;
+  const std::vector<std::shared_ptr<Stmt>> body;
 };
 
 class If : public Stmt
@@ -160,36 +218,4 @@ public:
 
   const std::shared_ptr<Expr> condition;
   const std::shared_ptr<Stmt> body;
-};
-
-class Break : public Stmt
-{
-public:
-  Break() = default;
-
-  auto accept(VisitorStmt<void> &visitor) const -> void override
-  {
-    visitor.visitBreakStmt(*this);
-  }
-
-  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitBreakStmt(*this);
-  }
-};
-
-class Continue : public Stmt
-{
-public:
-  Continue() = default;
-
-  auto accept(VisitorStmt<void> &visitor) const -> void override
-  {
-    visitor.visitContinueStmt(*this);
-  }
-
-  auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
-  {
-    return visitor.visitContinueStmt(*this);
-  }
 };

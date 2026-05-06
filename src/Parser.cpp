@@ -26,6 +26,8 @@ auto Parser::declaration() -> std::shared_ptr<Stmt>
     {
       if(match({TokenType::LET}))
         return varDeclaration();
+      if(match({TokenType::FUN}))
+        return function("function");
 
       return statement();
     }
@@ -518,4 +520,32 @@ auto Parser::finishCall(std::shared_ptr<Expr> callee) -> std::shared_ptr<Expr>
 
   Token paren = consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments");
   return std::make_shared<Call>(callee, paren, arguments);
+}
+
+auto Parser::function(std::string kind) -> std::shared_ptr<Stmt>
+{
+  // Function name/identifier
+  Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name");
+  consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
+
+  // Function parameters
+  std::vector<Token> parameters;
+  if(!check(TokenType::RIGHT_PAREN))
+    {
+      do
+        {
+          if(parameters.size() >= 255)
+            error(peek(), "Can't have more than 255 arguments.");
+
+          parameters.push_back(
+            consume(TokenType::IDENTIFIER, "Expect parameter name."));
+      } while(match({TokenType::COMMA}));
+      consume(TokenType::RIGHT_PAREN, "Expect ')' after " + kind + " name.");
+    }
+
+  // Function body
+  consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + " body.");
+  std::vector<std::shared_ptr<Stmt>> body = block();
+
+  return std::make_shared<Function>(name, parameters, body);
 }

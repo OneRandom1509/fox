@@ -44,8 +44,15 @@ private:
   class ParseError : public std::exception
   {};
 
-  /// declaration    → varDecl | statement ;
+  /// declaration    → funDecl | varDecl | statement ;
   auto declaration() -> std::shared_ptr<Stmt>;
+
+  /// funDecl        → "fun" function ;
+
+  /// function       → IDENTIFIER "(" parameters? ")" block ;
+  auto function(std::string kind) -> std::shared_ptr<Stmt>;
+
+  /// parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 
   /// varDecl        → "let" IDENTIFIER ( "=" expression )? ";" ;
   auto varDeclaration() -> std::shared_ptr<Stmt>;

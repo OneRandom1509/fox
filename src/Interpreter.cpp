@@ -10,7 +10,6 @@
 #include <vector>
 #include "Environment.hpp"
 #include "FoxCallable.hpp"
-#include "lib/libfox.hpp"
 
 Interpreter::Interpreter()
 {

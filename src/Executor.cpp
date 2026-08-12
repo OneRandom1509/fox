@@ -6,9 +6,12 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
 #include "Scanner.hpp"
 #include "Token.hpp"
 #include "Parser.hpp"
+#include <readline/readline.h>
+#include <readline/history.h>
 
 // Initializing static variables
 std::string Executor::source = "";
@@ -38,12 +41,14 @@ void Executor::runFile(std::string path)
 
 void Executor::runPrompt()
 {
-  std::string buf;
-  while(true)
+  char *line;
+  while((line = readline("fox> ")) != nullptr)
     {
       repl = true;
-      std::cout << "fox> ";
-      std::getline(std::cin, buf);
+      if(*line)
+        add_history(line);
+      std::string buf(line);
+      free(line);
       if(buf == "exit();")
         {
           std::cout << FOX_PROMPT_EXIT << std::endl;

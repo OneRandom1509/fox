@@ -54,6 +54,11 @@ target_include_directories(fox
         ${PROJECT_SOURCE_DIR}/include/callable
 )
 
+target_link_libraries(fox
+    PRIVATE
+        readline
+)
+
 # ------------------------------------------------
 # Warnings
 # ------------------------------------------------

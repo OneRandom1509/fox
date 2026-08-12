@@ -44,7 +44,7 @@ void Executor::runPrompt()
       repl = true;
       std::cout << "fox> ";
       std::getline(std::cin, buf);
-      if(buf == "exit()")
+      if(buf == "exit();")
         {
           std::cout << FOX_PROMPT_EXIT << std::endl;
           exit(EX_OK);
@@ -83,9 +83,7 @@ void Executor::run()
 }
 
 void Executor::error(int line, std::string message)
-{
-  report(line, "", message);
-}
+{ report(line, "", message); }
 
 void Executor::error(Token token, std::string message)
 {

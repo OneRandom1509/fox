@@ -59,7 +59,11 @@ clean:
 	rm -rf $(BUILD_DIR) $(BUILD_DBG_DIR)
 	rm -f $(AST_GEN)
 
-rebuild: clean build
+rebuild:
+	$(MAKE) clean
+	$(MAKE) build
+
+.PHONY: build debug clean rebuild ast-expr ast-stmt
 
 # ============================================================
 # AST Generator

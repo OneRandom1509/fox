@@ -101,7 +101,7 @@ void Resolver::visitCallExpr(const Call &expr)
 {
   resolve(expr.callee);
 
-  for(auto argument : expr.arguments)
+  for(const auto &argument : expr.arguments)
     {
       resolve(argument);
     }
@@ -139,7 +139,7 @@ void Resolver::visitFunctionBodyExpr(const FunctionBody &expr)
   FunctionGuard guard(currentFunction, FunctionType::FUNCTION);
 
   beginScope();
-  for(auto &param : expr.params)
+  for(const auto &param : expr.params)
     {
       declare(param);
       define(param);
@@ -150,7 +150,7 @@ void Resolver::visitFunctionBodyExpr(const FunctionBody &expr)
 
 void Resolver::resolve(std::vector<std::shared_ptr<Stmt>> statements)
 {
-  for(auto statement : statements)
+  for(const auto &statement : statements)
     {
       resolve(statement);
     }

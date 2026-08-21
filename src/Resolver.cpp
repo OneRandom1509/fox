@@ -79,7 +79,7 @@ void Resolver::visitVariableExpr(const Variable &expr)
         {
           Executor::error(
             expr.name,
-            "[RESOLVER]:Can't read local variable in its own initializer.");
+            "[RESOLVER]: Can't read local variable in its own initializer.");
         }
     }
   resolveLocal(&expr, expr.name);
@@ -122,12 +122,10 @@ void Resolver::visitUnaryExpr(const Unary &expr) { resolve(expr.right); }
 
 void Resolver::visitTernaryExpr(const Ternary &expr)
 {
+  // Everything is mandatory in ternary expr
   resolve(expr.condition);
   resolve(expr.left);
-  if(expr.right != nullptr)
-    {
-      resolve(expr.right);
-    }
+  resolve(expr.right);
 }
 
 void Resolver::visitCommaExpr(const Comma &expr)

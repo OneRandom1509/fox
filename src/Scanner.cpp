@@ -93,7 +93,7 @@ void Scanner::scanToken()
 
           if(isAtEnd())
             {
-              Executor::error(line, "Unterminated block comment.");
+              Executor::error(line, "[SCANNER]: Unterminated block comment.");
               break;
             }
 
@@ -128,7 +128,7 @@ void Scanner::scanToken()
         }
       else
         {
-          Executor::error(line, "Unexpected character.");
+          Executor::error(line, "[SCANNER]: Unexpected character.");
           break;
         }
     }
@@ -174,7 +174,7 @@ void Scanner::string()
 
   if(isAtEnd())
     {
-      Executor::error(line, "Unterminated string.");
+      Executor::error(line, "[SCANNER]: Unterminated string.");
       return;
     }
 

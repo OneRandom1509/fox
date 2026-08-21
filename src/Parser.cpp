@@ -529,7 +529,7 @@ auto Parser::consume(TokenType type, std::string message) -> Token
 
 auto Parser::error(Token token, std::string message) -> Parser::ParseError
 {
-  Executor::error(token, message);
+  Executor::error(token, "[PARSER]: " + message);
   return ParseError{};
 }
 

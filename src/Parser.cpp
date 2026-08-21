@@ -514,14 +514,10 @@ auto Parser::advance() -> Token
 auto Parser::isAtEnd() -> bool { return peek().type == TokenType::EOF_TOK; }
 
 [[nodiscard]] auto Parser::peek() const -> const Token &
-{
-  return tokens.at(current);
-}
+{ return tokens.at(current); }
 
 [[nodiscard]] auto Parser::previous() const -> const Token &
-{
-  return tokens.at(current - 1);
-}
+{ return tokens.at(current - 1); }
 
 auto Parser::consume(TokenType type, std::string message) -> Token
 {

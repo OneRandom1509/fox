@@ -7,6 +7,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <unistd.h>
 #include <variant>
 #include <vector>
 #include "Environment.hpp"
@@ -14,9 +15,7 @@
 #include "libfox.hpp"
 
 Interpreter::Interpreter()
-{
-  globals->define("clock", {true, std::make_shared<Clock>()});
-}
+{ globals->define("clock", {true, std::make_shared<Clock>()}); }
 
 void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> &statements)
 {
@@ -155,8 +154,18 @@ auto Interpreter::isEqual(literal_t a, literal_t b) const -> bool
 }
 
 auto Interpreter::evaluate(Expr &expr) -> literal_t
+{ return expr.accept(*this); }
+
+void Interpreter::resolve(const Expr *expr, int depth)
+{ locals.insert_or_assign(expr, depth); }
+
+auto Interpreter::lookupVariable(Token name, Expr *expr) -> literal_t
 {
-  return expr.accept(*this);
+  auto it = locals.find(expr);
+  if(it != locals.end())
+    return environment->getAt(it->second, name.lexeme);
+  else
+    return globals->get(name);
 }
 
 auto Interpreter::isTruthy(literal_t literal) const -> bool
@@ -191,14 +200,10 @@ auto Interpreter::visitUnaryExpr(const Unary &expr) -> literal_t
 }
 
 auto Interpreter::visitGroupingExpr(const Grouping &expr) -> literal_t
-{
-  return evaluate(*expr.expression);
-}
+{ return evaluate(*expr.expression); }
 
 auto Interpreter::visitLiteralExpr(const Literal &expr) -> literal_t
-{
-  return expr.value;
-}
+{ return expr.value; }
 
 auto Interpreter::visitCommaExpr(const Comma &expr) -> literal_t
 {
@@ -218,15 +223,21 @@ auto Interpreter::visitTernaryExpr(const Ternary &expr) -> literal_t
 }
 
 auto Interpreter::visitVariableExpr(const Variable &expr) -> literal_t
-{
-  return environment->get(expr.name);
-}
+{ return lookupVariable(expr.name, const_cast<Variable *>(&expr)); }
 
 auto Interpreter::visitAssignExpr(const Assign &expr) -> literal_t
 {
   literal_t value = evaluate(*expr.value);
+  auto it = locals.find(const_cast<Assign *>(&expr));
   // true is passed as it is obvious that the variable is (being) initialized
-  environment->assign(expr.name, {true, value});
+  if(it != locals.end())
+    {
+      environment->assignAt(it->second, expr.name, {true, value});
+    }
+  else
+    {
+      globals->assign(expr.name, {true, value});
+    }
   return value;
 }
 
@@ -344,13 +355,12 @@ void Interpreter::executeBlock(
 }
 
 // stmt argument is not used
-void Interpreter::visitBreakStmt(const Break &_stmt) { throw BreakFlow{}; }
+void Interpreter::visitBreakStmt([[maybe_unused]] const Break &_stmt)
+{ throw BreakFlow{}; }
 
 // stmt argument is not used
-void Interpreter::visitContinueStmt(const Continue &_stmt)
-{
-  throw ContinueFlow{};
-}
+void Interpreter::visitContinueStmt([[maybe_unused]] const Continue &_stmt)
+{ throw ContinueFlow{}; }
 
 auto Interpreter::visitCallExpr(const Call &expr) -> literal_t
 {

@@ -36,6 +36,7 @@ set(FOX_SOURCES
     src/RuntimeError.cpp
     src/Interpreter.cpp
     src/Environment.cpp
+    src/Resolver.cpp
     src/callable/FoxFunction.cpp
     src/lib/clock.cpp
 )

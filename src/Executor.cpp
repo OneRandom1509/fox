@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include "Resolver.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
 #include "Parser.hpp"
@@ -81,6 +82,11 @@ void Executor::run()
   auto statements = parser.parse();
 
   // Stop if there's a syntax error
+  if(hadError)
+    return;
+
+  Resolver resolver = Resolver(interpreter);
+  resolver.resolve(statements);
   if(hadError)
     return;
 

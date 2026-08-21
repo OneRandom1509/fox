@@ -6,6 +6,7 @@
 #include <exception>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 #include "Environment.hpp"
@@ -63,13 +64,16 @@ public:
   // environment of the interpreter
   void executeBlock(const std::vector<std::shared_ptr<Stmt>> &statements,
                     std::shared_ptr<Environment> environment);
+  void resolve(const Expr *expr, int depth);
 
 private:
   literal_t result;
   std::shared_ptr<Environment> environment = globals;
+  std::unordered_map<const Expr *, int> locals;
 
   inline void execute(Stmt &stmt);
   auto inline evaluate(Expr &expr) -> literal_t;
+  auto lookupVariable(Token name, Expr *expr) -> literal_t;
   [[nodiscard]] auto inline isTruthy(literal_t literal) const -> bool;
   [[nodiscard]] auto inline isEqual(literal_t a, literal_t b) const -> bool;
   inline void checkNumberOperand(Token op, literal_t operand) const;

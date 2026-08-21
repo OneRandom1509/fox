@@ -16,14 +16,15 @@ auto Environment::get(Token name) const -> literal_t
     {
       // Checking if the variable is uninitialized
       if(!it->second.first)
-        throw RuntimeError(name,
-                           "Unintialized variable '" + name.lexeme + "'.");
+        throw RuntimeError(name, "[ENVIRONMENT]: Unintialized variable '"
+                                   + name.lexeme + "'.");
       return it->second.second;
     }
   if(enclosing != nullptr)
     return enclosing->get(name);
 
-  throw RuntimeError{name, "Undefined variable '" + name.lexeme + "'."};
+  throw RuntimeError{name, "[ENVIRONMENT]: Undefined variable '" + name.lexeme
+                             + "'."};
 }
 
 auto Environment::getAt(int distance, std::string name) const -> literal_t
@@ -58,7 +59,8 @@ void Environment::assign(Token name, std::pair<bool, literal_t> value)
       enclosing->assign(name, value);
       return;
     }
-  throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+  throw RuntimeError(name, "[ENVIRONMENT]: Undefined variable '" + name.lexeme
+                             + "'.");
 }
 
 void Environment::assignAt(int distance, Token name,

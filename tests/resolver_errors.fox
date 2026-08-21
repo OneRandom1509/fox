@@ -1,0 +1,19 @@
+// Resolver error test: every snippet below must be rejected at resolve
+// time. The resolver reports all of these in a single run and the
+// interpreter never executes (exit code 65 / EX_DATAERR).
+//
+// Expected stderr:
+// [line 9] Error at 'a': [RESOLVER]: Can't read local variable in its own initializer.
+// [line 14] Error at 'dup': [RESOLVER]: Already a variable with this name in this scope.
+// [line 18] Error at 'return': [RESOLVER]: Can't return from top-level code.
+
+{
+  let a = a;
+}
+
+{
+  let dup = 1;
+  let dup = 2;
+}
+
+return 5;

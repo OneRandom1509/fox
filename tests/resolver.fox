@@ -1,0 +1,60 @@
+// Resolver test: verifies variables are statically resolved to the
+// correct scope depth. Expected output is listed next to each print.
+let x = "global";
+
+{
+  let x = "outer";
+  {
+    let x = "inner";
+    print x; // inner
+  }
+  print x; // outer
+}
+print x; // global
+
+// Reads before a later declaration in the same block fall back to outer scope
+let late = "global late";
+{
+  print late; // global late
+  let late = "block late";
+  print late; // block late
+}
+
+// Assignment resolves to the nearest enclosing binding
+{
+  let count = 0;
+  count = count + 1;
+  {
+    count = count + 10;
+  }
+  print count; // 11
+}
+
+// Closures capture their resolved locals independently per call
+fun makeCounter() {
+  let n = 0;
+  fun inc() {
+    n = n + 1;
+    return n;
+  }
+  return inc;
+}
+
+let counterA = makeCounter();
+let counterB = makeCounter();
+print counterA(); // 1
+print counterA(); // 2
+print counterB(); // 1
+
+// Recursion: function body can refer to itself by name
+fun fib(n) {
+  if(n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+print fib(10); // 55
+
+// Parameters shadow globals without touching them
+let n = 100;
+fun twice(n) { return n * 2; }
+print twice(5); // 10
+print n; // 100

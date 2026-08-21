@@ -32,7 +32,7 @@ void Resolver::visitFunctionStmt(const Function &stmt)
   // eager defining so function can refer to itself in its function body
   define(stmt.name);
 
-  resolveFunction(stmt, FunctionType::FUNCTION);
+  resolve(stmt.body);
 }
 
 void Resolver::visitExpressionStmt(const Expression &stmt)
@@ -134,8 +134,19 @@ void Resolver::visitCommaExpr(const Comma &expr)
   resolve(expr.right);
 }
 
-void Resolver::visitFunctionBodyExpr([[maybe_unused]] const FunctionBody &expr)
-{}
+void Resolver::visitFunctionBodyExpr(const FunctionBody &expr)
+{
+  FunctionGuard guard(currentFunction, FunctionType::FUNCTION);
+
+  beginScope();
+  for(auto &param : expr.params)
+    {
+      declare(param);
+      define(param);
+    }
+  resolve(expr.body);
+  endScope();
+}
 
 void Resolver::resolve(std::vector<std::shared_ptr<Stmt>> statements)
 {
@@ -159,21 +170,6 @@ void Resolver::resolveLocal(const Expr *expr, Token name)
           return;
         }
     }
-}
-
-void Resolver::resolveFunction(const Function &function, FunctionType type)
-{
-  FunctionGuard guard(currentFunction, type);
-
-  beginScope();
-  auto params = std::dynamic_pointer_cast<FunctionBody>(function.body)->params;
-  for(auto &param : params)
-    {
-      declare(param);
-      define(param);
-    }
-  resolve(function.body);
-  endScope();
 }
 
 void Resolver::beginScope()

@@ -83,4 +83,5 @@ private:
   checkNumberOperands(Token op, literal_t left, literal_t right) const;
   [[nodiscard]] auto inline stringify(literal_t literal) const -> std::string;
   [[nodiscard]] auto asDouble(const literal_t &value) const -> double;
+  [[nodiscard]] auto compare(literal_t left, literal_t right) const -> int;
 };

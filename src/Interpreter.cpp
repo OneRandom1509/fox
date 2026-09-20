@@ -91,6 +91,28 @@ auto Interpreter::asDouble(const literal_t &value) const -> double
   return std::get<bool>(value) ? 1.0 : 0.0;
 }
 
+// Returns strcmp-like result: <0 (lesser), 0 (equal), >0 (greater).
+// monostate (nil) is always the lesser value.
+auto Interpreter::compare(literal_t left, literal_t right) const -> int
+{
+  if(std::holds_alternative<std::monostate>(left)
+     && std::holds_alternative<std::monostate>(right))
+    return 0;
+  if(std::holds_alternative<std::monostate>(left))
+    return -1;
+  if(std::holds_alternative<std::monostate>(right))
+    return 1;
+
+  if(checkNumberOperands(left, right))
+    {
+      double l = asDouble(left);
+      double r = asDouble(right);
+      return l < r ? -1 : (l > r ? 1 : 0);
+    }
+
+  return stringify(left).compare(stringify(right));
+}
+
 auto Interpreter::visitBinaryExpr(const Binary &expr) -> literal_t
 {
   literal_t left = evaluate(*expr.left);
@@ -98,18 +120,10 @@ auto Interpreter::visitBinaryExpr(const Binary &expr) -> literal_t
 
   switch(expr.operator_.type)
     {
-    case TokenType::GREATER:
-      checkNumberOperands(expr.operator_, left, right);
-      return asDouble(left) > asDouble(right);
-    case TokenType::GREATER_EQUAL:
-      checkNumberOperands(expr.operator_, left, right);
-      return asDouble(left) >= asDouble(right);
-    case TokenType::LESSER:
-      checkNumberOperands(expr.operator_, left, right);
-      return asDouble(left) < asDouble(right);
-    case TokenType::LESSER_EQUAL:
-      checkNumberOperands(expr.operator_, left, right);
-      return asDouble(left) <= asDouble(right);
+    case TokenType::GREATER: return compare(left, right) > 0;
+    case TokenType::GREATER_EQUAL: return compare(left, right) >= 0;
+    case TokenType::LESSER: return compare(left, right) < 0;
+    case TokenType::LESSER_EQUAL: return compare(left, right) <= 0;
 
     case TokenType::MINUS:
       checkNumberOperands(expr.operator_, left, right);

@@ -7,6 +7,7 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include <unistd.h>
 #include "Resolver.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
@@ -14,11 +15,31 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+namespace
+{
+  constexpr const char *ANSI_RED = "\033[31m";
+  constexpr const char *ANSI_YELLOW = "\033[33m";
+  constexpr const char *ANSI_RESET = "\033[0m";
+} // namespace
+
 // Initializing static variables
 std::string Executor::source = "";
 bool Executor::hadError = false;
 bool Executor::hadRuntimeError = false;
 bool Executor::repl = false;
+
+// Only paint stderr in color when it is an actual terminal
+namespace
+{
+  const bool colorEnabled = isatty(STDERR_FILENO) != 0;
+
+  auto colored(const char *color, const char *text) -> std::string
+  {
+    if(!colorEnabled)
+      return text;
+    return std::string(color) + text + ANSI_RESET;
+  }
+} // namespace
 
 Interpreter Executor::interpreter = Interpreter();
 
@@ -114,20 +135,20 @@ void Executor::warn(Token token, std::string message)
 
 void Executor::reportWarning(int line, std::string where, std::string message)
 {
-  std::cerr << "[line " << line << "] Warning" << where << ": " << message
-            << std::endl;
+  std::cerr << "[line " << line << "] " << colored(ANSI_YELLOW, "[WARNING]")
+            << where << ": " << message << std::endl;
 }
 
 void Executor::report(int line, std::string where, std::string message)
 {
-  std::cerr << "[line " << line << "] Error" << where << ": " << message
-            << std::endl;
+  std::cerr << "[line " << line << "] " << colored(ANSI_RED, "[ERROR]")
+            << where << ": " << message << std::endl;
   hadError = true;
 }
 
 void Executor::runtimeError(RuntimeError &error)
 {
-  std::cerr << error.what() << "\n[line" << error.token.line << "]"
-            << std::endl;
+  std::cerr << error.what() << "\n[line " << error.token.line << "] "
+            << colored(ANSI_RED, "[ERROR]") << std::endl;
   hadRuntimeError = true;
 }

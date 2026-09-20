@@ -10,6 +10,7 @@ class Executor
 public:
   static std::string source;
   static bool repl;
+  static bool printTokens;
 
   void runFile(std::string path);
   void runPrompt();

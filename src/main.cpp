@@ -4,17 +4,50 @@
 #include <string>
 #include "Executor.hpp"
 
+void printUsage()
+{
+  std::cout << "Usage: fox [options] [script]\n"
+            << "\n"
+            << "Fox is a tree-walking interpreter for the Fox language.\n"
+            << "With no arguments it starts an interactive prompt (REPL).\n"
+            << "\n"
+            << "Options:\n"
+            << "  -h, --help     Show this help message and exit\n"
+            << "  -t, --tokens   Print all tokens scanned from the source\n"
+            << std::endl;
+}
+
 auto main(int argc, char *argv[]) -> int
 {
   Executor executor;
-  if(argc > 2)
+  std::string scriptPath;
+
+  for(int i = 1; i < argc; ++i)
     {
-      std::cerr << "Usage: fox [script]" << std::endl;
-      exit(EX_USAGE);
+      std::string arg(argv[i]);
+      if(arg == "-h" || arg == "--help")
+        {
+          printUsage();
+          exit(EX_OK);
+        }
+      else if(arg == "-t" || arg == "--tokens")
+        {
+          Executor::printTokens = true;
+        }
+      else if(!scriptPath.empty())
+        {
+          std::cerr << "Usage: fox [options] [script]" << std::endl;
+          exit(EX_USAGE);
+        }
+      else
+        {
+          scriptPath = arg;
+        }
     }
-  else if(argc == 2)
+
+  if(!scriptPath.empty())
     {
-      executor.runFile(std::string(argv[1]));
+      executor.runFile(scriptPath);
     }
   else
     {

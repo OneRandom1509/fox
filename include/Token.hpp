@@ -74,7 +74,7 @@ public:
 
   Token(TokenType type, std::string lexeme, literal_t literal, int line);
 
-  [[nodiscard]] inline auto toString() const -> std::string;
+  [[nodiscard]] auto toString() const -> std::string;
 };
 
 // This doesn't look good, need to prolly have a common utils

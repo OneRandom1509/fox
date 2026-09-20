@@ -27,6 +27,7 @@ std::string Executor::source = "";
 bool Executor::hadError = false;
 bool Executor::hadRuntimeError = false;
 bool Executor::repl = false;
+bool Executor::printTokens = false;
 
 // Only paint stderr in color when it is an actual terminal
 namespace
@@ -93,12 +94,15 @@ void Executor::run()
   Scanner scanner(this->source);
   std::vector<Token> tokens = scanner.scanTokens();
 
-  // for(auto token : tokens)
-  //   {
-  //     std::cout << token.toString() << std::endl;
-  //   }
-  // std::cout << std::endl;
-  //
+  if(printTokens)
+    {
+      for(auto token : tokens)
+        {
+          std::cout << token.toString() << std::endl;
+        }
+      std::cout << std::endl;
+    }
+
   Parser parser(tokens);
   auto statements = parser.parse();
 

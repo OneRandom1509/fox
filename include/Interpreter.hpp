@@ -42,7 +42,7 @@ public:
   void visitWhileStmt(const While &stmt) override;
   void visitBreakStmt(const Break &stmt) override;
   void visitContinueStmt(const Continue &stmt) override;
-  void visitFunctionStmt(const Function &stmt) override;
+  void visitFunctionDeclStmt(const FunctionDecl &stmt) override;
   void visitReturnStmt(const Return &stmt) override;
 
   auto visitFunctionBodyExpr(const FunctionBody &expr) -> literal_t override;

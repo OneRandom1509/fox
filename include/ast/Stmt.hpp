@@ -10,7 +10,7 @@ class Block;
 class Break;
 class Continue;
 class Expression;
-class Function;
+class FunctionDecl;
 class If;
 class Print;
 class Return;
@@ -24,7 +24,7 @@ public:
   virtual auto visitBreakStmt(const class Break &expr) -> R = 0;
   virtual auto visitContinueStmt(const class Continue &expr) -> R = 0;
   virtual auto visitExpressionStmt(const class Expression &expr) -> R = 0;
-  virtual auto visitFunctionStmt(const class Function &expr) -> R = 0;
+  virtual auto visitFunctionDeclStmt(const class FunctionDecl &expr) -> R = 0;
   virtual auto visitIfStmt(const class If &expr) -> R = 0;
   virtual auto visitPrintStmt(const class Print &expr) -> R = 0;
   virtual auto visitReturnStmt(const class Return &expr) -> R = 0;
@@ -113,21 +113,21 @@ public:
   const std::shared_ptr<Expr> expression;
 };
 
-class Function : public Stmt
+class FunctionDecl : public Stmt
 {
 public:
-  Function(Token name, std::shared_ptr<Expr> body)
+  FunctionDecl(Token name, std::shared_ptr<Expr> body)
       : name(std::move(name)), body(std::move(body))
   {}
 
   auto accept(VisitorStmt<void> &visitor) const -> void override
   {
-    visitor.visitFunctionStmt(*this);
+    visitor.visitFunctionDeclStmt(*this);
   }
 
   auto accept(VisitorStmt<literal_t> &visitor) const -> literal_t override
   {
-    return visitor.visitFunctionStmt(*this);
+    return visitor.visitFunctionDeclStmt(*this);
   }
 
   const Token name;

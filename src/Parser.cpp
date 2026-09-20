@@ -29,7 +29,7 @@ auto Parser::declaration() -> std::shared_ptr<Stmt>
       if(check(TokenType::FUN) && checkNext(TokenType::IDENTIFIER))
         {
           consume(TokenType::FUN, "");
-          return function("function");
+          return functionDecl("function");
         }
 
       return statement();
@@ -552,11 +552,11 @@ auto Parser::finishCall(std::shared_ptr<Expr> callee) -> std::shared_ptr<Expr>
   return std::make_shared<Call>(callee, paren, arguments);
 }
 
-auto Parser::function(std::string kind) -> std::shared_ptr<Stmt>
+auto Parser::functionDecl(std::string kind) -> std::shared_ptr<Stmt>
 {
   // Function name/identifier
   Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name");
-  return std::make_shared<Function>(name, functionBody(kind));
+  return std::make_shared<FunctionDecl>(name, functionBody(kind));
 }
 
 auto Parser::returnStatement() -> std::shared_ptr<Stmt>

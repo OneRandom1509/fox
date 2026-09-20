@@ -181,7 +181,7 @@ auto main(int argc, char *argv[]) -> int
     {"Break", ""},
     {"Continue", ""},
     {"Expression", "std::shared_ptr<Expr> expression"},
-    {"Function", "Token name, std::shared_ptr<Expr> body"},
+    {"FunctionDecl", "Token name, std::shared_ptr<Expr> body"},
     {"If", "std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> "
            "thenBranch, std::shared_ptr<Stmt> elseBranch"},
     {"Print", "std::shared_ptr<Expr> expression"},

@@ -388,7 +388,7 @@ auto Interpreter::visitCallExpr(const Call &expr) -> literal_t
   return function->call(*this, arguments);
 }
 
-void Interpreter::visitFunctionStmt(const Function &stmt)
+void Interpreter::visitFunctionDeclStmt(const FunctionDecl &stmt)
 {
   auto declaration = std::dynamic_pointer_cast<FunctionBody>(stmt.body);
   if(declaration == nullptr)

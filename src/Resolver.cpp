@@ -28,7 +28,7 @@ void Resolver::visitVarStmt(const Var &stmt)
   return;
 }
 
-void Resolver::visitFunctionStmt(const Function &stmt)
+void Resolver::visitFunctionDeclStmt(const FunctionDecl &stmt)
 {
   declare(stmt.name, VarEntry::Kind::FUNCTION);
   // eager defining so function can refer to itself in its function body

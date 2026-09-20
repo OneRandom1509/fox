@@ -63,7 +63,7 @@ public:
   Resolver(Interpreter &interpreter);
   void visitBlockStmt(const Block &stmt) override;
   void visitVarStmt(const Var &stmt) override;
-  void visitFunctionStmt(const Function &stmt) override;
+  void visitFunctionDeclStmt(const FunctionDecl &stmt) override;
   void visitExpressionStmt(const Expression &stmt) override;
   void visitIfStmt(const If &stmt) override;
   void visitPrintStmt(const Print &stmt) override;
@@ -97,7 +97,7 @@ private:
   inline void resolve(std::shared_ptr<Expr>);
   void resolveList(const std::vector<std::shared_ptr<Stmt>> &statements);
   auto resolveLocal(const Expr *expr, Token name) -> int;
-  void resolveFunction(const Function &function, FunctionType type);
+  void resolveFunction(const FunctionDecl &function, FunctionType type);
 
   inline void beginScope();
   inline void endScope();

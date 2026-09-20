@@ -50,7 +50,7 @@ private:
   /// funDecl        → "fun" function ;
   /// function       → IDENTIFIER "(" parameters? ")" block ;
   /// parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
-  auto function(std::string kind) -> std::shared_ptr<Stmt>;
+  auto functionDecl(std::string kind) -> std::shared_ptr<Stmt>;
 
   /// varDecl        → "let" IDENTIFIER ( "=" expression )? ";" ;
   auto varDeclaration() -> std::shared_ptr<Stmt>;

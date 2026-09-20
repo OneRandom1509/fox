@@ -1,0 +1,7 @@
+let a = 10;
+fun c(d) {
+  print 10;
+}
+let b = 20;
+print b;
+let _e = 50;

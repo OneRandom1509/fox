@@ -104,6 +104,20 @@ void Executor::error(Token token, std::string message)
     report(token.line, " at '" + token.lexeme + "'", message);
 }
 
+void Executor::warn(Token token, std::string message)
+{
+  if(token.type == TokenType::EOF_TOK)
+    reportWarning(token.line, " at end", message);
+  else
+    reportWarning(token.line, " at '" + token.lexeme + "'", message);
+}
+
+void Executor::reportWarning(int line, std::string where, std::string message)
+{
+  std::cerr << "[line " << line << "] Warning" << where << ": " << message
+            << std::endl;
+}
+
 void Executor::report(int line, std::string where, std::string message)
 {
   std::cerr << "[line " << line << "] Error" << where << ": " << message

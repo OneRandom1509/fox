@@ -15,6 +15,33 @@ enum class FunctionType
   FUNCTION
 };
 
+struct VarEntry
+{
+  enum class Kind
+  {
+    VARIABLE,
+    FUNCTION,
+    PARAMETER
+  };
+
+  bool defined = false;
+  bool used = false;
+  int line = 0;
+  Kind kind = Kind::VARIABLE;
+
+  VarEntry() = default;
+  VarEntry(int line, Kind kind, bool defined = false, bool used = false)
+      : defined(defined), used(used), line(line), kind(kind)
+  {}
+};
+
+struct ResolverWarning
+{
+  int line;
+  std::string lexeme;
+  std::string message;
+};
+
 // Just like LoopGuard
 struct FunctionGuard
 {
@@ -61,18 +88,21 @@ public:
 
 private:
   Interpreter &interpreter;
-  std::vector<std::unordered_map<std::string, bool>> scopes;
+  std::vector<std::unordered_map<std::string, VarEntry>> scopes;
+  std::vector<ResolverWarning> warnings;
   FunctionType currentFunction = FunctionType::NONE;
   size_t scopes_size = 0;
 
   inline void resolve(std::shared_ptr<Stmt>);
   inline void resolve(std::shared_ptr<Expr>);
-  void resolveLocal(const Expr *expr, Token name);
+  void resolveList(const std::vector<std::shared_ptr<Stmt>> &statements);
+  auto resolveLocal(const Expr *expr, Token name) -> int;
   void resolveFunction(const Function &function, FunctionType type);
 
   inline void beginScope();
   inline void endScope();
+  void flushWarnings();
 
-  void declare(Token name);
+  void declare(Token name, VarEntry::Kind kind = VarEntry::Kind::VARIABLE);
   void define(Token name);
 };

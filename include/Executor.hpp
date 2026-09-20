@@ -16,6 +16,7 @@ public:
 
   static void error(int line, std::string message);
   static void error(Token token, std::string message);
+  static void warn(Token token, std::string message);
   static void runtimeError(RuntimeError &error);
 
 private:
@@ -25,4 +26,6 @@ private:
 
   void run();
   static inline void report(int line, std::string where, std::string message);
+  static inline void
+  reportWarning(int line, std::string where, std::string message);
 };
